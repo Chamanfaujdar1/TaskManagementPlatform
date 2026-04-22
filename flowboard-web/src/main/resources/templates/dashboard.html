@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - FlowBoard</title>
+</head>
+<body>
+<h1>Dashboard</h1>
+<div th:each="workspace : ${workspaces}">
+    <p th:text="${workspace}"></p>
+</div>
+</body>
+</html>
