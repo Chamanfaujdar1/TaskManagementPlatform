@@ -1,0 +1,11 @@
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\config\JwtUtil.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\config\SecurityConfig.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\entity\Workspace.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\entity\WorkspaceMember.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\filter\JwtFilter.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\repository\WorkspaceMemberRepository.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\repository\WorkspaceRepository.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\resource\WorkspaceResource.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\service\WorkspaceService.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\serviceimpl\WorkspaceServiceImpl.java
+D:\TaskManagementPlatform\workspace-service\src\main\java\com\flowboard\workspace\WorkspaceServiceApplication.java

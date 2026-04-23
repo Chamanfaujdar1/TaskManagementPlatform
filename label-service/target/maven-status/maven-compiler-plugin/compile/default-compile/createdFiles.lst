@@ -1,0 +1,15 @@
+com\flowboard\label\entity\Label.class
+com\flowboard\label\service\LabelService.class
+com\flowboard\label\entity\CardLabel.class
+com\flowboard\label\config\JwtUtil.class
+com\flowboard\label\repository\ChecklistItemRepository.class
+com\flowboard\label\serviceimpl\LabelServiceImpl.class
+com\flowboard\label\repository\ChecklistRepository.class
+com\flowboard\label\filter\JwtFilter.class
+com\flowboard\label\entity\Checklist.class
+com\flowboard\label\config\SecurityConfig.class
+com\flowboard\label\LabelServiceApplication.class
+com\flowboard\label\repository\CardLabelRepository.class
+com\flowboard\label\entity\ChecklistItem.class
+com\flowboard\label\repository\LabelRepository.class
+com\flowboard\label\resource\LabelResource.class

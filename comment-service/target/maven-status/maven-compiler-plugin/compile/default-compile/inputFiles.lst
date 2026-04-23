@@ -1,0 +1,11 @@
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\CommentServiceApplication.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\config\JwtUtil.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\config\SecurityConfig.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\entity\Attachment.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\entity\Comment.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\filter\JwtFilter.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\repository\AttachmentRepository.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\repository\CommentRepository.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\resource\CommentResource.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\service\CommentService.java
+D:\TaskManagementPlatform\comment-service\src\main\java\com\flowboard\comment\serviceimpl\CommentServiceImpl.java
