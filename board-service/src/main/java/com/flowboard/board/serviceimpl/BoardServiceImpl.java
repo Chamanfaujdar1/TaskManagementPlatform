@@ -2,6 +2,8 @@ package com.flowboard.board.serviceimpl;
 
 import com.flowboard.board.entity.Board;
 import com.flowboard.board.entity.BoardMember;
+import com.flowboard.board.exception.BadRequestException;
+import com.flowboard.board.exception.ResourceNotFoundException;
 import com.flowboard.board.repository.BoardMemberRepository;
 import com.flowboard.board.repository.BoardRepository;
 import com.flowboard.board.service.BoardService;
@@ -25,7 +27,6 @@ public class BoardServiceImpl implements BoardService {
         board.setIsClosed(false);
         Board saved = boardRepository.save(board);
 
-        // Auto add creator as ADMIN member
         BoardMember creatorMember = new BoardMember();
         creatorMember.setBoardId(saved.getBoardId());
         creatorMember.setUserId(saved.getCreatedById());
@@ -39,7 +40,7 @@ public class BoardServiceImpl implements BoardService {
     public Board getBoardById(int boardId) {
         return boardRepository.findByBoardId(boardId)
                 .orElseThrow(() ->
-                        new RuntimeException("Board not found"));
+                        new ResourceNotFoundException("Board not found with id: " + boardId));
     }
 
     @Override
@@ -61,21 +62,12 @@ public class BoardServiceImpl implements BoardService {
     public Board updateBoard(int boardId, Board updated) {
         Board existing = getBoardById(boardId);
         if (existing.getIsClosed()) {
-            throw new RuntimeException(
-                    "Cannot update a closed board");
+            throw new BadRequestException("Cannot update a closed board with id: " + boardId);
         }
-        if (updated.getName() != null) {
-            existing.setName(updated.getName());
-        }
-        if (updated.getDescription() != null) {
-            existing.setDescription(updated.getDescription());
-        }
-        if (updated.getBackground() != null) {
-            existing.setBackground(updated.getBackground());
-        }
-        if (updated.getVisibility() != null) {
-            existing.setVisibility(updated.getVisibility());
-        }
+        if (updated.getName() != null) existing.setName(updated.getName());
+        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
+        if (updated.getBackground() != null) existing.setBackground(updated.getBackground());
+        if (updated.getVisibility() != null) existing.setVisibility(updated.getVisibility());
         return boardRepository.save(existing);
     }
 
@@ -94,12 +86,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardMember addMember(
-            int boardId, int userId, String role) {
-        if (boardMemberRepository
-                .existsByBoardIdAndUserId(boardId, userId)) {
-            throw new RuntimeException(
-                    "User is already a member of this board");
+    public BoardMember addMember(int boardId, int userId, String role) {
+        if (boardMemberRepository.existsByBoardIdAndUserId(boardId, userId)) {
+            throw new BadRequestException("User " + userId + " is already a member of board " + boardId);
         }
         BoardMember member = new BoardMember();
         member.setBoardId(boardId);
@@ -111,21 +100,18 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void removeMember(int boardId, int userId) {
-        if (!boardMemberRepository
-                .existsByBoardIdAndUserId(boardId, userId)) {
-            throw new RuntimeException("Member not found");
+        if (!boardMemberRepository.existsByBoardIdAndUserId(boardId, userId)) {
+            throw new ResourceNotFoundException("Member " + userId + " not found in board " + boardId);
         }
-        boardMemberRepository
-                .deleteByBoardIdAndUserId(boardId, userId);
+        boardMemberRepository.deleteByBoardIdAndUserId(boardId, userId);
     }
 
     @Override
-    public void updateMemberRole(
-            int boardId, int userId, String role) {
+    public void updateMemberRole(int boardId, int userId, String role) {
         BoardMember member = boardMemberRepository
                 .findByBoardIdAndUserId(boardId, userId)
                 .orElseThrow(() ->
-                        new RuntimeException("Member not found"));
+                        new ResourceNotFoundException("Member " + userId + " not found in board " + boardId));
         member.setRole(role);
         boardMemberRepository.save(member);
     }

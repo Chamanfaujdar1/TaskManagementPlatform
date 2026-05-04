@@ -2,6 +2,9 @@ package com.flowboard.auth.serviceimpl;
 
 import com.flowboard.auth.config.JwtUtil;
 import com.flowboard.auth.entity.User;
+import com.flowboard.auth.exception.BadRequestException;
+import com.flowboard.auth.exception.ResourceNotFoundException;
+import com.flowboard.auth.exception.UnauthorizedException;
 import com.flowboard.auth.repository.UserRepository;
 import com.flowboard.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +28,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User register(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already registered: " + user.getEmail());
         }
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new BadRequestException("Username already taken: " + user.getUsername());
         }
         user.setPasswordHash(passwordEncoder.encode(user.getPasswordHash()));
         user.setRole("MEMBER");
@@ -40,12 +43,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         if (!user.getIsActive()) {
-            throw new RuntimeException("Account is deactivated");
+            throw new UnauthorizedException("Account is deactivated. Please contact support.");
         }
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("Invalid password");
+            throw new BadRequestException("Invalid password");
         }
         return jwtUtil.generateToken(user.getEmail(), user.getRole());
     }
@@ -63,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String refreshToken(String token) {
         if (!jwtUtil.validateToken(token)) {
-            throw new RuntimeException("Invalid or expired token");
+            throw new UnauthorizedException("Invalid or expired token");
         }
         String email = jwtUtil.extractEmail(token);
         String role = jwtUtil.extractRole(token);
@@ -73,13 +76,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
     }
 
     @Override
     public User getUserById(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -99,6 +102,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void changePassword(int id, String newPassword) {
+        if (newPassword == null || newPassword.trim().length() < 6) {
+            throw new BadRequestException("Password must be at least 6 characters");
+        }
         User user = getUserById(id);
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(user);
@@ -107,12 +113,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void deactivateAccount(int id) {
         User user = getUserById(id);
+        if (!user.getIsActive()) {
+            throw new BadRequestException("Account is already deactivated");
+        }
         user.setIsActive(false);
         userRepository.save(user);
     }
 
     @Override
     public List<User> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new BadRequestException("Search query cannot be empty");
+        }
         return userRepository.searchByFullName(query);
     }
 }

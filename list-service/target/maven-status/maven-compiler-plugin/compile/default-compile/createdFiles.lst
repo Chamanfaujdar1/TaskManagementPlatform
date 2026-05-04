@@ -1,9 +1,0 @@
-com\flowboard\list\ListServiceApplication.class
-com\flowboard\list\entity\TaskList.class
-com\flowboard\list\config\SecurityConfig.class
-com\flowboard\list\service\ListService.class
-com\flowboard\list\filter\JwtFilter.class
-com\flowboard\list\config\JwtUtil.class
-com\flowboard\list\serviceimpl\ListServiceImpl.class
-com\flowboard\list\resource\ListResource.class
-com\flowboard\list\repository\ListRepository.class

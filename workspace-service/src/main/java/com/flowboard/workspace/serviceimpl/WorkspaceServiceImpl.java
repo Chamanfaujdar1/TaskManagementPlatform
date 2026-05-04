@@ -2,6 +2,8 @@ package com.flowboard.workspace.serviceimpl;
 
 import com.flowboard.workspace.entity.Workspace;
 import com.flowboard.workspace.entity.WorkspaceMember;
+import com.flowboard.workspace.exception.BadRequestException;
+import com.flowboard.workspace.exception.ResourceNotFoundException;
 import com.flowboard.workspace.repository.WorkspaceMemberRepository;
 import com.flowboard.workspace.repository.WorkspaceRepository;
 import com.flowboard.workspace.service.WorkspaceService;
@@ -14,22 +16,19 @@ import java.util.List;
 @Service
 public class WorkspaceServiceImpl implements WorkspaceService {
 
-    @Autowired
-    private WorkspaceRepository workspaceRepository;
-
-    @Autowired
-    private WorkspaceMemberRepository workspaceMemberRepository;
+    @Autowired private WorkspaceRepository workspaceRepository;
+    @Autowired private WorkspaceMemberRepository workspaceMemberRepository;
 
     @Override
     public Workspace createWorkspace(Workspace workspace) {
-        if (workspaceRepository.existsByNameAndOwnerId(
-                workspace.getName(), workspace.getOwnerId())) {
-            throw new RuntimeException(
-                    "Workspace with this name already exists");
+        if (workspace.getName() == null || workspace.getName().trim().isEmpty()) {
+            throw new BadRequestException("Workspace name cannot be empty");
+        }
+        if (workspaceRepository.existsByNameAndOwnerId(workspace.getName(), workspace.getOwnerId())) {
+            throw new BadRequestException("Workspace '" + workspace.getName() + "' already exists for this owner");
         }
         Workspace saved = workspaceRepository.save(workspace);
 
-        // Auto add owner as ADMIN member
         WorkspaceMember ownerMember = new WorkspaceMember();
         ownerMember.setWorkspaceId(saved.getWorkspaceId());
         ownerMember.setUserId(saved.getOwnerId());
@@ -43,7 +42,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public Workspace getById(int workspaceId) {
         return workspaceRepository.findByWorkspaceId(workspaceId)
                 .orElseThrow(() ->
-                        new RuntimeException("Workspace not found"));
+                        new ResourceNotFoundException("Workspace not found with id: " + workspaceId));
     }
 
     @Override
@@ -64,18 +63,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Override
     public Workspace updateWorkspace(int workspaceId, Workspace updated) {
         Workspace existing = getById(workspaceId);
-        if (updated.getName() != null) {
-            existing.setName(updated.getName());
-        }
-        if (updated.getDescription() != null) {
-            existing.setDescription(updated.getDescription());
-        }
-        if (updated.getVisibility() != null) {
-            existing.setVisibility(updated.getVisibility());
-        }
-        if (updated.getLogoUrl() != null) {
-            existing.setLogoUrl(updated.getLogoUrl());
-        }
+        if (updated.getName() != null) existing.setName(updated.getName());
+        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
+        if (updated.getVisibility() != null) existing.setVisibility(updated.getVisibility());
+        if (updated.getLogoUrl() != null) existing.setLogoUrl(updated.getLogoUrl());
         return workspaceRepository.save(existing);
     }
 
@@ -87,12 +78,9 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     @Override
-    public WorkspaceMember addMember(
-            int workspaceId, int userId, String role) {
-        if (workspaceMemberRepository
-                .existsByWorkspaceIdAndUserId(workspaceId, userId)) {
-            throw new RuntimeException(
-                    "User is already a member of this workspace");
+    public WorkspaceMember addMember(int workspaceId, int userId, String role) {
+        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId)) {
+            throw new BadRequestException("User " + userId + " is already a member of workspace " + workspaceId);
         }
         WorkspaceMember member = new WorkspaceMember();
         member.setWorkspaceId(workspaceId);
@@ -104,21 +92,18 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     @Override
     @Transactional
     public void removeMember(int workspaceId, int userId) {
-        if (!workspaceMemberRepository
-                .existsByWorkspaceIdAndUserId(workspaceId, userId)) {
-            throw new RuntimeException("Member not found");
+        if (!workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId)) {
+            throw new ResourceNotFoundException("Member " + userId + " not found in workspace " + workspaceId);
         }
-        workspaceMemberRepository
-                .deleteByWorkspaceIdAndUserId(workspaceId, userId);
+        workspaceMemberRepository.deleteByWorkspaceIdAndUserId(workspaceId, userId);
     }
 
     @Override
-    public void updateMemberRole(
-            int workspaceId, int userId, String role) {
+    public void updateMemberRole(int workspaceId, int userId, String role) {
         WorkspaceMember member = workspaceMemberRepository
                 .findByWorkspaceIdAndUserId(workspaceId, userId)
                 .orElseThrow(() ->
-                        new RuntimeException("Member not found"));
+                        new ResourceNotFoundException("Member " + userId + " not found in workspace " + workspaceId));
         member.setRole(role);
         workspaceMemberRepository.save(member);
     }

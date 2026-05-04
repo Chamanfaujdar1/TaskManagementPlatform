@@ -1,6 +1,8 @@
 package com.flowboard.notification.serviceimpl;
 
 import com.flowboard.notification.entity.Notification;
+import com.flowboard.notification.exception.BadRequestException;
+import com.flowboard.notification.exception.ResourceNotFoundException;
 import com.flowboard.notification.repository.NotificationRepository;
 import com.flowboard.notification.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,25 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class NotificationServiceImpl
-        implements NotificationService {
+public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
 
     @Override
     public void send(Notification notification) {
+        if (notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
+            throw new BadRequestException("Notification title cannot be empty");
+        }
         notificationRepository.save(notification);
     }
 
     @Override
-    public void sendBulk(List<Integer> recipientIds,
-                         String title,
-                         String message) {
+    public void sendBulk(List<Integer> recipientIds, String title, String message) {
+        if (recipientIds == null || recipientIds.isEmpty()) {
+            throw new BadRequestException("Recipient list cannot be empty");
+        }
+        if (title == null || title.trim().isEmpty()) {
+            throw new BadRequestException("Notification title cannot be empty");
+        }
         for (int recipientId : recipientIds) {
             Notification notification = new Notification();
             notification.setRecipientId(recipientId);
-            notification.setActorId(0); // system
+            notification.setActorId(0);
             notification.setType("BROADCAST");
             notification.setTitle(title);
             notification.setMessage(message);
@@ -39,11 +47,12 @@ public class NotificationServiceImpl
 
     @Override
     public void markAsRead(int notificationId) {
-        Notification notification = notificationRepository
-                .findById(notificationId)
+        Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() ->
-                        new RuntimeException(
-                                "Notification not found"));
+                        new ResourceNotFoundException("Notification not found with id: " + notificationId));
+        if (notification.getIsRead()) {
+            throw new BadRequestException("Notification is already marked as read");
+        }
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
@@ -51,9 +60,7 @@ public class NotificationServiceImpl
     @Override
     @Transactional
     public void markAllRead(int recipientId) {
-        List<Notification> unread = notificationRepository
-                .findByRecipientIdAndIsRead(
-                        recipientId, false);
+        List<Notification> unread = notificationRepository.findByRecipientIdAndIsRead(recipientId, false);
         for (Notification n : unread) {
             n.setIsRead(true);
             notificationRepository.save(n);
@@ -63,30 +70,26 @@ public class NotificationServiceImpl
     @Override
     @Transactional
     public void deleteRead(int recipientId) {
-        notificationRepository
-                .deleteByRecipientIdAndIsRead(
-                        recipientId, true);
+        notificationRepository.deleteByRecipientIdAndIsRead(recipientId, true);
     }
 
     @Override
-    public List<Notification> getByRecipient(
-            int recipientId) {
-        return notificationRepository
-                .findByRecipientId(recipientId);
+    public List<Notification> getByRecipient(int recipientId) {
+        return notificationRepository.findByRecipientId(recipientId);
     }
 
     @Override
     public long getUnreadCount(int recipientId) {
-        return notificationRepository
-                .countByRecipientIdAndIsRead(
-                        recipientId, false);
+        return notificationRepository.countByRecipientIdAndIsRead(recipientId, false);
     }
 
     @Override
     @Transactional
     public void deleteNotification(int notificationId) {
-        notificationRepository
-                .deleteByNotificationId(notificationId);
+        if (!notificationRepository.existsById(notificationId)) {
+            throw new ResourceNotFoundException("Notification not found with id: " + notificationId);
+        }
+        notificationRepository.deleteByNotificationId(notificationId);
     }
 
     @Override
