@@ -112,4 +112,14 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     public List<WorkspaceMember> getMembers(int workspaceId) {
         return workspaceMemberRepository.findByWorkspaceId(workspaceId);
     }
+
+    @Override
+    public long getTotalCount() {
+        return workspaceRepository.count();
+    }
+
+    @Override
+    public List<Workspace> getAllWorkspaces() {
+        return workspaceRepository.findAll();
+    }
 }

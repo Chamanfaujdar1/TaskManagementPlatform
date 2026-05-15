@@ -24,6 +24,11 @@ public interface AuthService {
     void changePassword(int id, String newPassword);
 
     void deactivateAccount(int id);
+    void reactivateAccount(int id);
 
     List<User> searchUsers(String query);
+
+    long getTotalUsersCount();
+
+    List<User> getAllUsers();
 }

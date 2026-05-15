@@ -1,9 +1,11 @@
 package com.flowboard.notification.resource;
 
 import com.flowboard.notification.entity.Notification;
+import com.flowboard.notification.model.RealTimeUpdate;
 import com.flowboard.notification.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,9 @@ public class NotificationResource {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // SEND NOTIFICATION
     @PostMapping
@@ -98,5 +103,28 @@ public class NotificationResource {
     public ResponseEntity<List<Notification>> getAll() {
         return ResponseEntity.ok(
                 notificationService.getAll());
+    }
+
+    // SEND EMAIL NOTIFICATION
+    @PostMapping("/email")
+    public ResponseEntity<String> sendEmail(
+            @RequestBody Map<String, Object> request) {
+        int recipientId = (Integer) request.get("recipientId");
+        String subject = (String) request.get("title");
+        String message = (String) request.get("message");
+        notificationService.sendEmail(recipientId, subject, message);
+        return ResponseEntity.ok(
+                "Email dispatch initiated successfully");
+    }
+
+    // BROADCAST REAL-TIME UPDATE
+    @PostMapping("/broadcast")
+    public ResponseEntity<String> broadcast(
+            @RequestBody RealTimeUpdate update) {
+        messagingTemplate.convertAndSend(
+                "/topic/board/" + update.getBoardId(),
+                update);
+        return ResponseEntity.ok(
+                "Real-time update broadcasted successfully");
     }
 }

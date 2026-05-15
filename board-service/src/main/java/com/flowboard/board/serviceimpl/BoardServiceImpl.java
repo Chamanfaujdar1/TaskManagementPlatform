@@ -79,6 +79,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public void reopenBoard(int boardId) {
+        Board board = getBoardById(boardId);
+        board.setIsClosed(false);
+        boardRepository.save(board);
+    }
+
+    @Override
     @Transactional
     public void deleteBoard(int boardId) {
         getBoardById(boardId);
@@ -119,5 +126,15 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardMember> getMembers(int boardId) {
         return boardMemberRepository.findByBoardId(boardId);
+    }
+
+    @Override
+    public long getTotalCount() {
+        return boardRepository.count();
+    }
+
+    @Override
+    public List<Board> getAllBoards() {
+        return boardRepository.findAll();
     }
 }

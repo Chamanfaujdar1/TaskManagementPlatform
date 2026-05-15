@@ -3,10 +3,14 @@ package com.flowboard.comment.resource;
 import com.flowboard.comment.entity.Attachment;
 import com.flowboard.comment.entity.Comment;
 import com.flowboard.comment.service.CommentService;
+import com.flowboard.comment.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +20,9 @@ public class CommentResource {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private S3Service s3Service;
 
     // ADD COMMENT
     @PostMapping("/comments")
@@ -99,5 +106,27 @@ public class CommentResource {
         commentService.deleteAttachment(id);
         return ResponseEntity.ok(
                 "Attachment deleted successfully");
+    }
+
+    // UPLOAD ATTACHMENT TO S3
+    @PostMapping(value = "/attachments/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Attachment> uploadAttachment(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("cardId") int cardId,
+            @RequestParam("uploaderId") int uploaderId) {
+        try {
+            String fileUrl = s3Service.uploadFile(file);
+            Attachment attachment = new Attachment();
+            attachment.setCardId(cardId);
+            attachment.setUploaderId(uploaderId);
+            attachment.setFileName(file.getOriginalFilename());
+            attachment.setFileUrl(fileUrl);
+            attachment.setFileType(file.getContentType());
+            attachment.setSizeKb(file.getSize() / 1024);
+            
+            return ResponseEntity.ok(commentService.addAttachment(attachment));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Card Detail | FlowBoard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: #e2e8f0; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        h1 { margin-top: 0; color: #38bdf8; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #94a3b8; }
+        input, select, textarea { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #f1f5f9; box-sizing: border-box; }
+        button { background: #0284c7; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; }
+        button:hover { background: #0369a1; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+        .back-link:hover { color: #38bdf8; }
+        .error { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Card Details</h1>
+        
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+        
+        <form th:if="${card}" th:action="@{/card/{id}/update(id=${card.cardId})}" method="post">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" th:value="${card.title}" required />
+            </div>
+            
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" rows="4" th:text="${card.description}"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option th:selected="${card.status == 'TO_DO'}" value="TO_DO">To Do</option>
+                    <option th:selected="${card.status == 'IN_PROGRESS'}" value="IN_PROGRESS">In Progress</option>
+                    <option th:selected="${card.status == 'IN_REVIEW'}" value="IN_REVIEW">In Review</option>
+                    <option th:selected="${card.status == 'DONE'}" value="DONE">Done</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Priority</label>
+                <select name="priority">
+                    <option th:selected="${card.priority == 'LOW'}" value="LOW">Low</option>
+                    <option th:selected="${card.priority == 'MEDIUM'}" value="MEDIUM">Medium</option>
+                    <option th:selected="${card.priority == 'HIGH'}" value="HIGH">High</option>
+                    <option th:selected="${card.priority == 'CRITICAL'}" value="CRITICAL">Critical</option>
+                </select>
+            </div>
+            
+            <button type="submit">Update Card</button>
+        </form>
+        
+        <a th:if="${card}" th:href="@{/board/{id}(id=${card.boardId})}" class="back-link">← Back to Board</a>
+        <a th:unless="${card}" href="/dashboard" class="back-link">Return to Dashboard</a>
+    </div>
+</body>
+</html>

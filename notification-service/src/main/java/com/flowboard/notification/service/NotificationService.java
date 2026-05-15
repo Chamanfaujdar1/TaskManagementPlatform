@@ -24,4 +24,6 @@ public interface NotificationService {
     void deleteNotification(int notificationId);
 
     List<Notification> getAll();
+
+    void sendEmail(int recipientId, String subject, String text);
 }

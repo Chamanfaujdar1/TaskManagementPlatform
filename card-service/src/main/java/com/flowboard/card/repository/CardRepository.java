@@ -31,4 +31,12 @@ public interface CardRepository
 
     List<Card> findByBoardIdAndIsArchived(
             int boardId, Boolean isArchived);
+
+    List<Card> findByDueDateBeforeAndStatusNotAndIsArchivedFalse(
+            LocalDate date, String status);
+
+    List<Card> findByDueDateAndStatusNotAndIsArchivedFalse(
+            LocalDate date, String status);
+
+    List<Card> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
 }

@@ -63,6 +63,14 @@ public class CardResource {
                 cardService.getOverdueCards());
     }
 
+    // SEARCH CARDS
+    @GetMapping("/search")
+    public ResponseEntity<List<Card>> search(
+            @RequestParam String q) {
+        return ResponseEntity.ok(
+                cardService.searchCards(q));
+    }
+
     // UPDATE CARD
     @PutMapping("/{id}")
     public ResponseEntity<Card> update(
@@ -151,5 +159,11 @@ public class CardResource {
         cardService.deleteCard(id);
         return ResponseEntity.ok(
                 "Card deleted successfully");
+    }
+
+    // GET ALL CARDS
+    @GetMapping("/all")
+    public ResponseEntity<List<Card>> getAll() {
+        return ResponseEntity.ok(cardService.getAllCards());
     }
 }

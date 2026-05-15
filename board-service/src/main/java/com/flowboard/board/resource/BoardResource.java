@@ -80,6 +80,15 @@ public class BoardResource {
                 "Board closed successfully");
     }
 
+    // REOPEN BOARD
+    @PutMapping("/{id}/reopen")
+    public ResponseEntity<String> reopen(
+            @PathVariable int id) {
+        boardService.reopenBoard(id);
+        return ResponseEntity.ok(
+                "Board reopened successfully");
+    }
+
     // DELETE BOARD
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(
@@ -128,5 +137,17 @@ public class BoardResource {
             @PathVariable int id) {
         return ResponseEntity.ok(
                 boardService.getMembers(id));
+    }
+
+    // GET TOTAL COUNT
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTotalCount() {
+        return ResponseEntity.ok(boardService.getTotalCount());
+    }
+
+    // GET ALL BOARDS
+    @GetMapping("/all")
+    public ResponseEntity<List<Board>> getAll() {
+        return ResponseEntity.ok(boardService.getAllBoards());
     }
 }

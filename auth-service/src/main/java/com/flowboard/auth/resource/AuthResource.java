@@ -85,10 +85,29 @@ public class AuthResource {
         return ResponseEntity.ok("Account deactivated successfully");
     }
 
+    // REACTIVATE ACCOUNT
+    @PutMapping("/reactivate/{id}")
+    public ResponseEntity<String> reactivateAccount(@PathVariable int id) {
+        authService.reactivateAccount(id);
+        return ResponseEntity.ok("Account reactivated successfully");
+    }
+
     // GET USER BY EMAIL
     @GetMapping("/email")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
         User user = authService.getUserByEmail(email);
         return ResponseEntity.ok(user);
+    }
+
+    // GET TOTAL COUNT
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTotalUsersCount() {
+        return ResponseEntity.ok(authService.getTotalUsersCount());
+    }
+
+    // GET ALL USERS
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(authService.getAllUsers());
     }
 }

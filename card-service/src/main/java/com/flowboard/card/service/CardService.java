@@ -29,11 +29,15 @@ public interface CardService {
 
     void deleteCard(int cardId);
 
-    Card setAssignee(int cardId, int assigneeId);
+    Card setAssignee(int cardId, Integer assigneeId);
 
     Card setPriority(int cardId, String priority);
 
     Card setStatus(int cardId, String status);
 
     List<Card> getOverdueCards();
+
+    List<Card> searchCards(String query);
+
+    List<Card> getAllCards();
 }

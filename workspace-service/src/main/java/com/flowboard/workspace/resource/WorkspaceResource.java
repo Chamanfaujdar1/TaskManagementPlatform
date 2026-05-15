@@ -114,4 +114,16 @@ public class WorkspaceResource {
         return ResponseEntity.ok(
                 workspaceService.getMembers(id));
     }
+
+    // GET TOTAL COUNT
+    @GetMapping("/count")
+    public ResponseEntity<Long> getTotalCount() {
+        return ResponseEntity.ok(workspaceService.getTotalCount());
+    }
+
+    // GET ALL WORKSPACES
+    @GetMapping("/all")
+    public ResponseEntity<List<Workspace>> getAll() {
+        return ResponseEntity.ok(workspaceService.getAllWorkspaces());
+    }
 }

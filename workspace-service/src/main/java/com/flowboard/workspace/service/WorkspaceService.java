@@ -28,4 +28,8 @@ public interface WorkspaceService {
     void updateMemberRole(int workspaceId, int userId, String role);
 
     List<WorkspaceMember> getMembers(int workspaceId);
+
+    long getTotalCount();
+
+    List<Workspace> getAllWorkspaces();
 }

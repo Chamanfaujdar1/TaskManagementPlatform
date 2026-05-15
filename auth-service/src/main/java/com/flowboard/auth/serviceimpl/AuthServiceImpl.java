@@ -121,10 +121,30 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void reactivateAccount(int id) {
+        User user = getUserById(id);
+        if (user.getIsActive()) {
+            throw new BadRequestException("Account is already active");
+        }
+        user.setIsActive(true);
+        userRepository.save(user);
+    }
+
+    @Override
     public List<User> searchUsers(String query) {
         if (query == null || query.trim().isEmpty()) {
             throw new BadRequestException("Search query cannot be empty");
         }
         return userRepository.searchByFullName(query);
+    }
+
+    @Override
+    public long getTotalUsersCount() {
+        return userRepository.count();
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

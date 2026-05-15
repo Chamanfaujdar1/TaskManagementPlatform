@@ -48,6 +48,10 @@ public class Card {
     @Column(nullable = false)
     private Boolean isArchived = false;
 
+    private Boolean oneDayReminderSent = false;
+
+    private Boolean oneHourReminderSent = false;
+
     private String coverColor;
 
     @Column(nullable = false, updatable = false)

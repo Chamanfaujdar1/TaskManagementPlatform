@@ -20,6 +20,7 @@ public interface BoardService {
     Board updateBoard(int boardId, Board board);
 
     void closeBoard(int boardId);
+    void reopenBoard(int boardId);
 
     void deleteBoard(int boardId);
 
@@ -30,4 +31,8 @@ public interface BoardService {
     void updateMemberRole(int boardId, int userId, String role);
 
     List<BoardMember> getMembers(int boardId);
+
+    long getTotalCount();
+
+    List<Board> getAllBoards();
 }

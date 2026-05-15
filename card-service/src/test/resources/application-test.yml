@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:carddb;DB_CLOSE_DELAY=-1
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+eureka:
+  client:
+    enabled: false
+
+notification:
+  service:
+    url: http://localhost:8086
+auth:
+  service:
+    url: http://localhost:8081

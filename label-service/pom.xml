@@ -14,4 +14,12 @@
 	<name>label-service</name>
 	<description>FlowBoard Label Service</description>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 </project>
