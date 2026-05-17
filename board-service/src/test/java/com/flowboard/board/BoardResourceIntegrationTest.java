@@ -1,7 +1,7 @@
 package com.flowboard.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.board.entity.Board;
+import com.flowboard.board.dto.BoardDto;
 import com.flowboard.board.repository.BoardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class BoardResourceIntegrationTest {
     @Test
     void createAndGetBoard_Success() throws Exception {
         // 1. Create Board
-        Board board = new Board();
+        BoardDto board = new BoardDto();
         board.setName("Integration Board");
         board.setWorkspaceId(1);
         board.setCreatedById(100);
@@ -53,7 +53,7 @@ public class BoardResourceIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Integration Board"))
                 .andReturn().getResponse().getContentAsString();
 
-        Board saved = objectMapper.readValue(result, Board.class);
+        BoardDto saved = objectMapper.readValue(result, BoardDto.class);
 
         // 2. Get Board by ID
         mockMvc.perform(get("/api/v1/boards/" + saved.getBoardId()))

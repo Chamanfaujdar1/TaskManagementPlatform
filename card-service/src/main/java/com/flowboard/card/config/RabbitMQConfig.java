@@ -17,18 +17,18 @@ public class RabbitMQConfig {
     public static final String ROUTING_KEY = "notification.key";
 
     @Bean
-    public Queue queue() {
+    public Queue cardQueue() {
         return new Queue(QUEUE);
     }
 
     @Bean
-    public TopicExchange exchange() {
+    public TopicExchange cardExchange() {
         return new TopicExchange(EXCHANGE);
     }
 
     @Bean
-    public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    public Binding binding(Queue cardQueue, TopicExchange cardExchange) {
+        return BindingBuilder.bind(cardQueue).to(cardExchange).with(ROUTING_KEY);
     }
 
     @Bean

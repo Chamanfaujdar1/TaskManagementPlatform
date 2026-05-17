@@ -1,28 +1,28 @@
 package com.flowboard.comment.service;
 
-import com.flowboard.comment.entity.Attachment;
-import com.flowboard.comment.entity.Comment;
+import com.flowboard.comment.dto.AttachmentDto;
+import com.flowboard.comment.dto.CommentDto;
 import java.util.List;
 
 public interface CommentService {
 
-    Comment addComment(Comment comment);
+    CommentDto addComment(CommentDto commentDto);
 
-    List<Comment> getByCard(int cardId);
+    List<CommentDto> getByCard(int cardId);
 
-    Comment getCommentById(int commentId);
+    CommentDto getCommentById(int commentId);
 
-    List<Comment> getReplies(int parentCommentId);
+    List<CommentDto> getReplies(int parentCommentId);
 
-    Comment updateComment(int commentId, String content);
+    CommentDto updateComment(int commentId, String content);
 
     void deleteComment(int commentId);
 
     long getCommentCount(int cardId);
 
-    Attachment addAttachment(Attachment attachment);
+    AttachmentDto addAttachment(AttachmentDto attachmentDto);
 
-    List<Attachment> getAttachmentsByCard(int cardId);
+    List<AttachmentDto> getAttachmentsByCard(int cardId);
 
     void deleteAttachment(int attachmentId);
 }

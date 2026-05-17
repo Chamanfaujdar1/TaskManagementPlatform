@@ -1,11 +1,11 @@
 package com.flowboard.auth.service;
 
-import com.flowboard.auth.entity.User;
+import com.flowboard.auth.dto.UserDto;
 import java.util.List;
 
 public interface AuthService {
 
-    User register(User user);
+    UserDto register(UserDto userDto);
 
     String login(String email, String password);
 
@@ -15,20 +15,20 @@ public interface AuthService {
 
     String refreshToken(String token);
 
-    User getUserByEmail(String email);
+    UserDto getUserByEmail(String email);
 
-    User getUserById(int id);
+    UserDto getUserById(int id);
 
-    User updateProfile(int id, User user);
+    UserDto updateProfile(int id, UserDto userDto);
 
     void changePassword(int id, String newPassword);
 
     void deactivateAccount(int id);
     void reactivateAccount(int id);
 
-    List<User> searchUsers(String query);
+    List<UserDto> searchUsers(String query);
 
     long getTotalUsersCount();
 
-    List<User> getAllUsers();
+    List<UserDto> getAllUsers();
 }

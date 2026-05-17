@@ -1,7 +1,7 @@
 package com.flowboard.card;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.card.entity.Card;
+import com.flowboard.card.dto.CardDto;
 import com.flowboard.card.repository.CardRepository;
 import com.flowboard.card.repository.CardSearchRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class CardResourceIntegrationTest {
     @Test
     void createAndGetCard_Success() throws Exception {
         // 1. Create Card
-        Card card = new Card();
+        CardDto card = new CardDto();
         card.setTitle("Integration Card");
         card.setListId(1);
         card.setBoardId(10);
@@ -66,7 +66,7 @@ public class CardResourceIntegrationTest {
                 .andExpect(jsonPath("$.title").value("Integration Card"))
                 .andReturn().getResponse().getContentAsString();
 
-        Card saved = objectMapper.readValue(result, Card.class);
+        CardDto saved = objectMapper.readValue(result, CardDto.class);
 
         // 2. Get Card by ID
         mockMvc.perform(get("/api/v1/cards/" + saved.getCardId()))

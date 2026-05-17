@@ -1,11 +1,14 @@
 package com.flowboard.notification.serviceimpl;
 
+import com.flowboard.notification.dto.NotificationDto;
 import com.flowboard.notification.entity.Notification;
 import com.flowboard.notification.exception.BadRequestException;
 import com.flowboard.notification.exception.ResourceNotFoundException;
+import com.flowboard.notification.mapper.NotificationMapper;
 import com.flowboard.notification.repository.NotificationRepository;
 import com.flowboard.notification.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,24 +19,23 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Map;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
-    private NotificationRepository notificationRepository;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private RestTemplate restTemplate;
+    private final NotificationRepository notificationRepository;
+    private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate;
 
     @Value("${auth.service.url}")
     private String authServiceUrl;
 
     @Override
-    public void send(Notification notification) {
+    public void send(NotificationDto notificationDto) {
+        Notification notification = NotificationMapper.mapToEntity(notificationDto);
         if (notification.getTitle() == null || notification.getTitle().trim().isEmpty()) {
             throw new BadRequestException("Notification title cannot be empty");
         }
@@ -78,7 +80,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .map(u -> (Integer) u.get("userId"))
                     .toList();
         } catch (Exception e) {
-            System.err.println("Failed to fetch users for broadcast: " + e.getMessage());
+            log.error("Failed to fetch users for broadcast: {}", e.getMessage());
             return List.of();
         }
     }
@@ -112,8 +114,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<Notification> getByRecipient(int recipientId) {
-        return notificationRepository.findByRecipientId(recipientId);
+    public List<NotificationDto> getByRecipient(int recipientId) {
+        return notificationRepository.findByRecipientId(recipientId).stream()
+                .map(NotificationMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -131,8 +135,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public List<Notification> getAll() {
-        return notificationRepository.findAll();
+    public List<NotificationDto> getAll() {
+        return notificationRepository.findAll().stream()
+                .map(NotificationMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -154,7 +160,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
         } catch (Exception e) {
             // Log error or handle gracefully
-            System.err.println("Failed to send email to recipient " + recipientId + ": " + e.getMessage());
+            log.error("Failed to send email to recipient {}: {}", recipientId, e.getMessage());
         }
     }
 }

@@ -1,10 +1,10 @@
 package com.flowboard.label.resource;
 
-import com.flowboard.label.entity.Checklist;
-import com.flowboard.label.entity.ChecklistItem;
-import com.flowboard.label.entity.Label;
+import com.flowboard.label.dto.ChecklistDto;
+import com.flowboard.label.dto.ChecklistItemDto;
+import com.flowboard.label.dto.LabelDto;
 import com.flowboard.label.service.LabelService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,23 +12,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class LabelResource {
 
-    @Autowired
-    private LabelService labelService;
+    private final LabelService labelService;
 
     // CREATE LABEL
     @PostMapping("/labels")
-    public ResponseEntity<Label> createLabel(
-            @RequestBody Label label) {
+    public ResponseEntity<LabelDto> createLabel(
+            @RequestBody LabelDto labelDto) {
         return ResponseEntity.ok(
-                labelService.createLabel(label));
+                labelService.createLabel(labelDto));
     }
 
     // GET LABELS BY BOARD
     @GetMapping("/labels/board/{boardId}")
-    public ResponseEntity<List<Label>> getByBoard(
+    public ResponseEntity<List<LabelDto>> getByBoard(
             @PathVariable int boardId) {
         return ResponseEntity.ok(
                 labelService.getLabelsByBoard(boardId));
@@ -36,7 +36,7 @@ public class LabelResource {
 
     // GET LABEL BY ID
     @GetMapping("/labels/{id}")
-    public ResponseEntity<Label> getById(
+    public ResponseEntity<LabelDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 labelService.getLabelById(id));
@@ -44,11 +44,11 @@ public class LabelResource {
 
     // UPDATE LABEL
     @PutMapping("/labels/{id}")
-    public ResponseEntity<Label> update(
+    public ResponseEntity<LabelDto> update(
             @PathVariable int id,
-            @RequestBody Label label) {
+            @RequestBody LabelDto labelDto) {
         return ResponseEntity.ok(
-                labelService.updateLabel(id, label));
+                labelService.updateLabel(id, labelDto));
     }
 
     // DELETE LABEL
@@ -82,7 +82,7 @@ public class LabelResource {
 
     // GET LABELS FOR CARD
     @GetMapping("/labels/card/{cardId}")
-    public ResponseEntity<List<Label>> getForCard(
+    public ResponseEntity<List<LabelDto>> getForCard(
             @PathVariable int cardId) {
         return ResponseEntity.ok(
                 labelService.getLabelsForCard(cardId));
@@ -90,15 +90,15 @@ public class LabelResource {
 
     // CREATE CHECKLIST
     @PostMapping("/checklists")
-    public ResponseEntity<Checklist> createChecklist(
-            @RequestBody Checklist checklist) {
+    public ResponseEntity<ChecklistDto> createChecklist(
+            @RequestBody ChecklistDto checklistDto) {
         return ResponseEntity.ok(
-                labelService.createChecklist(checklist));
+                labelService.createChecklist(checklistDto));
     }
 
     // GET CHECKLISTS BY CARD
     @GetMapping("/checklists/card/{cardId}")
-    public ResponseEntity<List<Checklist>> getChecklists(
+    public ResponseEntity<List<ChecklistDto>> getChecklists(
             @PathVariable int cardId) {
         return ResponseEntity.ok(
                 labelService.getChecklistsByCard(cardId));
@@ -115,12 +115,12 @@ public class LabelResource {
 
     // ADD CHECKLIST ITEM
     @PostMapping("/checklists/{id}/items")
-    public ResponseEntity<ChecklistItem> addItem(
+    public ResponseEntity<ChecklistItemDto> addItem(
             @PathVariable int id,
-            @RequestBody ChecklistItem item) {
-        item.setChecklistId(id);
+            @RequestBody ChecklistItemDto itemDto) {
+        itemDto.setChecklistId(id);
         return ResponseEntity.ok(
-                labelService.addItem(item));
+                labelService.addItem(itemDto));
     }
 
     // TOGGLE CHECKLIST ITEM

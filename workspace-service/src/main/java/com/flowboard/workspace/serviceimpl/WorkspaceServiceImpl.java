@@ -1,26 +1,39 @@
 package com.flowboard.workspace.serviceimpl;
 
+import com.flowboard.workspace.dto.WorkspaceDto;
+import com.flowboard.workspace.dto.WorkspaceMemberDto;
 import com.flowboard.workspace.entity.Workspace;
 import com.flowboard.workspace.entity.WorkspaceMember;
 import com.flowboard.workspace.exception.BadRequestException;
 import com.flowboard.workspace.exception.ResourceNotFoundException;
+import com.flowboard.workspace.mapper.WorkspaceMapper;
+import com.flowboard.workspace.mapper.WorkspaceMemberMapper;
 import com.flowboard.workspace.repository.WorkspaceMemberRepository;
 import com.flowboard.workspace.repository.WorkspaceRepository;
 import com.flowboard.workspace.service.WorkspaceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class WorkspaceServiceImpl implements WorkspaceService {
 
-    @Autowired private WorkspaceRepository workspaceRepository;
-    @Autowired private WorkspaceMemberRepository workspaceMemberRepository;
+    private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
+
+    private Workspace findWorkspaceById(int id) {
+        return workspaceRepository.findByWorkspaceId(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Workspace not found with id: " + id));
+    }
 
     @Override
-    public Workspace createWorkspace(Workspace workspace) {
+    public WorkspaceDto createWorkspace(WorkspaceDto workspaceDto) {
+        Workspace workspace = WorkspaceMapper.mapToEntity(workspaceDto);
         if (workspace.getName() == null || workspace.getName().trim().isEmpty()) {
             throw new BadRequestException("Workspace name cannot be empty");
         }
@@ -35,50 +48,54 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         ownerMember.setRole("ADMIN");
         workspaceMemberRepository.save(ownerMember);
 
-        return saved;
+        return WorkspaceMapper.mapToDto(saved);
     }
 
     @Override
-    public Workspace getById(int workspaceId) {
-        return workspaceRepository.findByWorkspaceId(workspaceId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Workspace not found with id: " + workspaceId));
+    public WorkspaceDto getById(int workspaceId) {
+        return WorkspaceMapper.mapToDto(findWorkspaceById(workspaceId));
     }
 
     @Override
-    public List<Workspace> getByOwner(int ownerId) {
-        return workspaceRepository.findByOwnerId(ownerId);
+    public List<WorkspaceDto> getByOwner(int ownerId) {
+        return workspaceRepository.findByOwnerId(ownerId).stream()
+                .map(WorkspaceMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Workspace> getByMember(int userId) {
-        return workspaceRepository.findByMemberUserId(userId);
+    public List<WorkspaceDto> getByMember(int userId) {
+        return workspaceRepository.findByMemberUserId(userId).stream()
+                .map(WorkspaceMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Workspace> getPublicWorkspaces() {
-        return workspaceRepository.findByVisibility("PUBLIC");
+    public List<WorkspaceDto> getPublicWorkspaces() {
+        return workspaceRepository.findByVisibility("PUBLIC").stream()
+                .map(WorkspaceMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Workspace updateWorkspace(int workspaceId, Workspace updated) {
-        Workspace existing = getById(workspaceId);
+    public WorkspaceDto updateWorkspace(int workspaceId, WorkspaceDto updated) {
+        Workspace existing = findWorkspaceById(workspaceId);
         if (updated.getName() != null) existing.setName(updated.getName());
         if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
         if (updated.getVisibility() != null) existing.setVisibility(updated.getVisibility());
         if (updated.getLogoUrl() != null) existing.setLogoUrl(updated.getLogoUrl());
-        return workspaceRepository.save(existing);
+        return WorkspaceMapper.mapToDto(workspaceRepository.save(existing));
     }
 
     @Override
     @Transactional
     public void deleteWorkspace(int workspaceId) {
-        getById(workspaceId);
+        findWorkspaceById(workspaceId);
         workspaceRepository.deleteById(workspaceId);
     }
 
     @Override
-    public WorkspaceMember addMember(int workspaceId, int userId, String role) {
+    public WorkspaceMemberDto addMember(int workspaceId, int userId, String role) {
         if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspaceId, userId)) {
             throw new BadRequestException("User " + userId + " is already a member of workspace " + workspaceId);
         }
@@ -86,7 +103,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         member.setWorkspaceId(workspaceId);
         member.setUserId(userId);
         member.setRole(role != null ? role : "MEMBER");
-        return workspaceMemberRepository.save(member);
+        return WorkspaceMemberMapper.mapToDto(workspaceMemberRepository.save(member));
     }
 
     @Override
@@ -109,8 +126,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     @Override
-    public List<WorkspaceMember> getMembers(int workspaceId) {
-        return workspaceMemberRepository.findByWorkspaceId(workspaceId);
+    public List<WorkspaceMemberDto> getMembers(int workspaceId) {
+        return workspaceMemberRepository.findByWorkspaceId(workspaceId).stream()
+                .map(WorkspaceMemberMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -119,7 +138,9 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     @Override
-    public List<Workspace> getAllWorkspaces() {
-        return workspaceRepository.findAll();
+    public List<WorkspaceDto> getAllWorkspaces() {
+        return workspaceRepository.findAll().stream()
+                .map(WorkspaceMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 }

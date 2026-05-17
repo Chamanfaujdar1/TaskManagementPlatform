@@ -1,9 +1,9 @@
 package com.flowboard.board.resource;
 
-import com.flowboard.board.entity.Board;
-import com.flowboard.board.entity.BoardMember;
+import com.flowboard.board.dto.BoardDto;
+import com.flowboard.board.dto.BoardMemberDto;
 import com.flowboard.board.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,23 +11,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/boards")
 public class BoardResource {
 
-    @Autowired
-    private BoardService boardService;
+    private final BoardService boardService;
 
     // CREATE BOARD
     @PostMapping
-    public ResponseEntity<Board> create(
-            @RequestBody Board board) {
+    public ResponseEntity<BoardDto> create(
+            @RequestBody BoardDto boardDto) {
         return ResponseEntity.ok(
-                boardService.createBoard(board));
+                boardService.createBoard(boardDto));
     }
 
     // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<Board> getById(
+    public ResponseEntity<BoardDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 boardService.getBoardById(id));
@@ -35,7 +35,7 @@ public class BoardResource {
 
     // GET BY WORKSPACE
     @GetMapping("/workspace/{workspaceId}")
-    public ResponseEntity<List<Board>> getByWorkspace(
+    public ResponseEntity<List<BoardDto>> getByWorkspace(
             @PathVariable int workspaceId) {
         return ResponseEntity.ok(
                 boardService.getBoardsByWorkspace(workspaceId));
@@ -43,7 +43,7 @@ public class BoardResource {
 
     // GET BY MEMBER
     @GetMapping("/member/{userId}")
-    public ResponseEntity<List<Board>> getByMember(
+    public ResponseEntity<List<BoardDto>> getByMember(
             @PathVariable int userId) {
         return ResponseEntity.ok(
                 boardService.getBoardsByMember(userId));
@@ -51,7 +51,7 @@ public class BoardResource {
 
     // GET BY CREATOR
     @GetMapping("/creator/{createdById}")
-    public ResponseEntity<List<Board>> getByCreator(
+    public ResponseEntity<List<BoardDto>> getByCreator(
             @PathVariable int createdById) {
         return ResponseEntity.ok(
                 boardService.getBoardsByCreator(createdById));
@@ -61,10 +61,10 @@ public class BoardResource {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable int id,
-            @RequestBody Board board) {
+            @RequestBody BoardDto boardDto) {
         try {
             return ResponseEntity.ok(
-                    boardService.updateBoard(id, board));
+                    boardService.updateBoard(id, boardDto));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
@@ -100,7 +100,7 @@ public class BoardResource {
 
     // ADD MEMBER
     @PostMapping("/{id}/members")
-    public ResponseEntity<BoardMember> addMember(
+    public ResponseEntity<BoardMemberDto> addMember(
             @PathVariable int id,
             @RequestBody Map<String, Object> request) {
         int userId = (Integer) request.get("userId");
@@ -133,7 +133,7 @@ public class BoardResource {
 
     // GET ALL MEMBERS
     @GetMapping("/{id}/members")
-    public ResponseEntity<List<BoardMember>> getMembers(
+    public ResponseEntity<List<BoardMemberDto>> getMembers(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 boardService.getMembers(id));
@@ -147,7 +147,7 @@ public class BoardResource {
 
     // GET ALL BOARDS
     @GetMapping("/all")
-    public ResponseEntity<List<Board>> getAll() {
+    public ResponseEntity<List<BoardDto>> getAll() {
         return ResponseEntity.ok(boardService.getAllBoards());
     }
 }

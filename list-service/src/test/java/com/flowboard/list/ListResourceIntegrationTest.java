@@ -1,7 +1,7 @@
 package com.flowboard.list;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.list.entity.TaskList;
+import com.flowboard.list.dto.TaskListDto;
 import com.flowboard.list.repository.ListRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class ListResourceIntegrationTest {
     @Test
     void createAndGetLists_Success() throws Exception {
         // 1. Create List
-        TaskList list = new TaskList();
+        TaskListDto list = new TaskListDto();
         list.setName("Integration List");
         list.setBoardId(1);
 

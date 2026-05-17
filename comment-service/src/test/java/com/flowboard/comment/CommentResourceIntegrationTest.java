@@ -1,7 +1,7 @@
 package com.flowboard.comment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.comment.entity.Comment;
+import com.flowboard.comment.dto.CommentDto;
 import com.flowboard.comment.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class CommentResourceIntegrationTest {
     @Test
     void addAndGetComments_Success() throws Exception {
         // 1. Add Comment
-        Comment comment = new Comment();
+        CommentDto comment = new CommentDto();
         comment.setContent("Integration Comment");
         comment.setCardId(1);
         comment.setAuthorId(100);

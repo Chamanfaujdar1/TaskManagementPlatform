@@ -1,7 +1,7 @@
 package com.flowboard.label;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.label.entity.Label;
+import com.flowboard.label.dto.LabelDto;
 import com.flowboard.label.repository.LabelRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class LabelResourceIntegrationTest {
     @Test
     void createAndGetLabels_Success() throws Exception {
         // 1. Create Label
-        Label label = new Label();
+        LabelDto label = new LabelDto();
         label.setName("Critical");
         label.setColor("#FF0000");
         label.setBoardId(1);

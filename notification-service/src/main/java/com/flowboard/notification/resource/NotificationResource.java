@@ -1,9 +1,9 @@
 package com.flowboard.notification.resource;
 
-import com.flowboard.notification.entity.Notification;
+import com.flowboard.notification.dto.NotificationDto;
 import com.flowboard.notification.model.RealTimeUpdate;
 import com.flowboard.notification.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -12,20 +12,18 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/notifications")
 public class NotificationResource {
 
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private final NotificationService notificationService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // SEND NOTIFICATION
     @PostMapping
     public ResponseEntity<String> send(
-            @RequestBody Notification notification) {
-        notificationService.send(notification);
+            @RequestBody NotificationDto notificationDto) {
+        notificationService.send(notificationDto);
         return ResponseEntity.ok(
                 "Notification sent successfully");
     }
@@ -46,7 +44,7 @@ public class NotificationResource {
 
     // GET BY RECIPIENT
     @GetMapping("/recipient/{userId}")
-    public ResponseEntity<List<Notification>> getByRecipient(
+    public ResponseEntity<List<NotificationDto>> getByRecipient(
             @PathVariable int userId) {
         return ResponseEntity.ok(
                 notificationService.getByRecipient(userId));
@@ -100,7 +98,7 @@ public class NotificationResource {
 
     // GET ALL NOTIFICATIONS
     @GetMapping
-    public ResponseEntity<List<Notification>> getAll() {
+    public ResponseEntity<List<NotificationDto>> getAll() {
         return ResponseEntity.ok(
                 notificationService.getAll());
     }

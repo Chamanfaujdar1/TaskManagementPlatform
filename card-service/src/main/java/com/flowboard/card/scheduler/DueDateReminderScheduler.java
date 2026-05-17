@@ -2,7 +2,8 @@ package com.flowboard.card.scheduler;
 
 import com.flowboard.card.entity.Card;
 import com.flowboard.card.repository.CardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,13 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DueDateReminderScheduler {
 
-    @Autowired
-    private CardRepository cardRepository;
-
-    @Autowired
-    private RestTemplate restTemplate;
+    private final CardRepository cardRepository;
+    private final RestTemplate restTemplate;
 
     @Value("${notification.service.url}")
     private String notificationServiceUrl;
@@ -32,7 +32,7 @@ public class DueDateReminderScheduler {
     // Run every hour
     @Scheduled(cron = "0 0 * * * ?")
     public void checkAndSendReminders() {
-        System.out.println("Running due date reminders job...");
+        log.info("Running due date reminders job...");
         
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
@@ -47,7 +47,7 @@ public class DueDateReminderScheduler {
                         "The card '" + card.getTitle() + "' is due tomorrow.");
                 card.setOneDayReminderSent(true);
                 cardRepository.save(card);
-                System.out.println("Sent 1-day reminder for card: " + card.getCardId());
+                log.info("Sent 1-day reminder for card: {}", card.getCardId());
             }
         }
 
@@ -62,7 +62,7 @@ public class DueDateReminderScheduler {
                             "The card '" + card.getTitle() + "' is due in approximately 1 hour.");
                     card.setOneHourReminderSent(true);
                     cardRepository.save(card);
-                    System.out.println("Sent 1-hour reminder for card: " + card.getCardId());
+                    log.info("Sent 1-hour reminder for card: {}", card.getCardId());
                 }
             }
         }
@@ -84,7 +84,7 @@ public class DueDateReminderScheduler {
 
             restTemplate.postForEntity(notificationServiceUrl + "/api/v1/notifications", entity, String.class);
         } catch (Exception e) {
-            System.err.println("Failed to send reminder notification for recipient " + recipientId + ": " + e.getMessage());
+            log.error("Failed to send reminder notification for recipient {}: {}", recipientId, e.getMessage());
         }
     }
 }

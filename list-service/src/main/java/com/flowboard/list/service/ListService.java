@@ -1,19 +1,19 @@
 package com.flowboard.list.service;
 
-import com.flowboard.list.entity.TaskList;
+import com.flowboard.list.dto.TaskListDto;
 import java.util.List;
 
 public interface ListService {
 
-    TaskList createList(TaskList taskList);
+    TaskListDto createList(TaskListDto taskListDto);
 
-    TaskList getListById(int listId);
+    TaskListDto getListById(int listId);
 
-    List<TaskList> getListsByBoard(int boardId);
+    List<TaskListDto> getListsByBoard(int boardId);
 
-    List<TaskList> getArchivedLists(int boardId);
+    List<TaskListDto> getArchivedLists(int boardId);
 
-    TaskList updateList(int listId, TaskList taskList);
+    TaskListDto updateList(int listId, TaskListDto taskListDto);
 
     void reorderLists(int boardId,
                       List<Integer> orderedListIds);
@@ -24,5 +24,5 @@ public interface ListService {
 
     void deleteList(int listId);
 
-    TaskList moveList(int listId, int targetBoardId);
+    TaskListDto moveList(int listId, int targetBoardId);
 }

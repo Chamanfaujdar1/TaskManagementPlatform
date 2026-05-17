@@ -1,23 +1,23 @@
 package com.flowboard.card.service;
 
-import com.flowboard.card.entity.Card;
+import com.flowboard.card.dto.CardDto;
 import java.util.List;
 
 public interface CardService {
 
-    Card createCard(Card card);
+    CardDto createCard(CardDto cardDto);
 
-    Card getCardById(int cardId);
+    CardDto getCardById(int cardId);
 
-    List<Card> getCardsByList(int listId);
+    List<CardDto> getCardsByList(int listId);
 
-    List<Card> getCardsByBoard(int boardId);
+    List<CardDto> getCardsByBoard(int boardId);
 
-    List<Card> getCardsByAssignee(int assigneeId);
+    List<CardDto> getCardsByAssignee(int assigneeId);
 
-    Card updateCard(int cardId, Card card);
+    CardDto updateCard(int cardId, CardDto cardDto);
 
-    Card moveCard(int cardId, int targetListId,
+    CardDto moveCard(int cardId, int targetListId,
                   int newPosition);
 
     void reorderCards(int listId,
@@ -29,15 +29,15 @@ public interface CardService {
 
     void deleteCard(int cardId);
 
-    Card setAssignee(int cardId, Integer assigneeId);
+    CardDto setAssignee(int cardId, Integer assigneeId);
 
-    Card setPriority(int cardId, String priority);
+    CardDto setPriority(int cardId, String priority);
 
-    Card setStatus(int cardId, String status);
+    CardDto setStatus(int cardId, String status);
 
-    List<Card> getOverdueCards();
+    List<CardDto> getOverdueCards();
 
-    List<Card> searchCards(String query);
+    List<CardDto> searchCards(String query);
 
-    List<Card> getAllCards();
+    List<CardDto> getAllCards();
 }

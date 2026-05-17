@@ -1,8 +1,8 @@
 package com.flowboard.auth.resource;
 
-import com.flowboard.auth.entity.User;
+import com.flowboard.auth.dto.UserDto;
 import com.flowboard.auth.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,16 +10,16 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthResource {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     // REGISTER
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        User registered = authService.register(user);
+    public ResponseEntity<UserDto> register(@RequestBody UserDto userDto) {
+        UserDto registered = authService.register(userDto);
         return ResponseEntity.ok(registered);
     }
 
@@ -50,16 +50,16 @@ public class AuthResource {
 
     // GET PROFILE
     @GetMapping("/profile/{id}")
-    public ResponseEntity<User> getProfile(@PathVariable int id) {
-        User user = authService.getUserById(id);
+    public ResponseEntity<UserDto> getProfile(@PathVariable int id) {
+        UserDto user = authService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
     // UPDATE PROFILE
     @PutMapping("/profile/{id}")
-    public ResponseEntity<User> updateProfile(@PathVariable int id,
-                                              @RequestBody User user) {
-        User updated = authService.updateProfile(id, user);
+    public ResponseEntity<UserDto> updateProfile(@PathVariable int id,
+                                              @RequestBody UserDto userDto) {
+        UserDto updated = authService.updateProfile(id, userDto);
         return ResponseEntity.ok(updated);
     }
 
@@ -73,8 +73,8 @@ public class AuthResource {
 
     // SEARCH USERS
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUsers(@RequestParam String query) {
-        List<User> users = authService.searchUsers(query);
+    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String query) {
+        List<UserDto> users = authService.searchUsers(query);
         return ResponseEntity.ok(users);
     }
 
@@ -94,8 +94,8 @@ public class AuthResource {
 
     // GET USER BY EMAIL
     @GetMapping("/email")
-    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
-        User user = authService.getUserByEmail(email);
+    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
+        UserDto user = authService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 
@@ -107,7 +107,7 @@ public class AuthResource {
 
     // GET ALL USERS
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(authService.getAllUsers());
     }
 }

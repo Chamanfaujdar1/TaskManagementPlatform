@@ -8,8 +8,10 @@ import com.flowboard.auth.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
+@Slf4j
 public class AuthServiceApplication {
 
 	public static void main(String[] args) {
@@ -29,9 +31,9 @@ public class AuthServiceApplication {
 				admin.setIsActive(true);
 				admin.setProvider("LOCAL");
 				userRepository.save(admin);
-				System.out.println(">>> Default Admin Account Created!");
-				System.out.println(">>> Email: admin@flowboard.com");
-				System.out.println(">>> Password: admin123");
+				log.info(">>> Default Admin Account Created!");
+				log.info(">>> Email: admin@flowboard.com");
+				log.info(">>> Password: [PROTECTED]");
 			}
 		};
 	}

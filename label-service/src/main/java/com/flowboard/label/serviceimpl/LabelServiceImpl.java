@@ -1,55 +1,68 @@
 package com.flowboard.label.serviceimpl;
 
+import com.flowboard.label.dto.ChecklistDto;
+import com.flowboard.label.dto.ChecklistItemDto;
+import com.flowboard.label.dto.LabelDto;
 import com.flowboard.label.entity.*;
 import com.flowboard.label.exception.BadRequestException;
 import com.flowboard.label.exception.ResourceNotFoundException;
+import com.flowboard.label.mapper.LabelMapper;
 import com.flowboard.label.repository.*;
 import com.flowboard.label.service.LabelService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LabelServiceImpl implements LabelService {
 
-    @Autowired private LabelRepository labelRepository;
-    @Autowired private CardLabelRepository cardLabelRepository;
-    @Autowired private ChecklistRepository checklistRepository;
-    @Autowired private ChecklistItemRepository checklistItemRepository;
+    private final LabelRepository labelRepository;
+    private final CardLabelRepository cardLabelRepository;
+    private final ChecklistRepository checklistRepository;
+    private final ChecklistItemRepository checklistItemRepository;
 
-    @Override
-    public Label createLabel(Label label) {
-        if (label.getName() == null || label.getName().trim().isEmpty()) {
-            throw new BadRequestException("Label name cannot be empty");
-        }
-        return labelRepository.save(label);
-    }
-
-    @Override
-    public List<Label> getLabelsByBoard(int boardId) {
-        return labelRepository.findByBoardId(boardId);
-    }
-
-    @Override
-    public Label getLabelById(int labelId) {
+    private Label findLabelById(int labelId) {
         return labelRepository.findByLabelId(labelId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Label not found with id: " + labelId));
     }
 
     @Override
-    public Label updateLabel(int labelId, Label updated) {
-        Label existing = getLabelById(labelId);
-        if (updated.getName() != null) existing.setName(updated.getName());
-        if (updated.getColor() != null) existing.setColor(updated.getColor());
-        return labelRepository.save(existing);
+    public LabelDto createLabel(LabelDto labelDto) {
+        Label label = LabelMapper.mapToEntity(labelDto);
+        if (label.getName() == null || label.getName().trim().isEmpty()) {
+            throw new BadRequestException("Label name cannot be empty");
+        }
+        return LabelMapper.mapToDto(labelRepository.save(label));
+    }
+
+    @Override
+    public List<LabelDto> getLabelsByBoard(int boardId) {
+        return labelRepository.findByBoardId(boardId).stream()
+                .map(LabelMapper::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public LabelDto getLabelById(int labelId) {
+        return LabelMapper.mapToDto(findLabelById(labelId));
+    }
+
+    @Override
+    public LabelDto updateLabel(int labelId, LabelDto updatedDto) {
+        Label existing = findLabelById(labelId);
+        if (updatedDto.getName() != null) existing.setName(updatedDto.getName());
+        if (updatedDto.getColor() != null) existing.setColor(updatedDto.getColor());
+        return LabelMapper.mapToDto(labelRepository.save(existing));
     }
 
     @Override
     public void deleteLabel(int labelId) {
-        getLabelById(labelId);
+        findLabelById(labelId);
         labelRepository.deleteById(labelId);
     }
 
@@ -71,25 +84,28 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public List<Label> getLabelsForCard(int cardId) {
+    public List<LabelDto> getLabelsForCard(int cardId) {
         return cardLabelRepository.findByCardId(cardId).stream()
-                .map(cl -> getLabelById(cl.getLabelId()))
+                .map(cl -> LabelMapper.mapToDto(findLabelById(cl.getLabelId())))
                 .toList();
     }
 
     @Override
-    public Checklist createChecklist(Checklist checklist) {
+    public ChecklistDto createChecklist(ChecklistDto checklistDto) {
+        Checklist checklist = LabelMapper.mapToEntity(checklistDto);
         if (checklist.getTitle() == null || checklist.getTitle().trim().isEmpty()) {
             throw new BadRequestException("Checklist title cannot be empty");
         }
         long count = checklistRepository.findByCardId(checklist.getCardId()).size();
         checklist.setPosition((int) count);
-        return checklistRepository.save(checklist);
+        return LabelMapper.mapToDto(checklistRepository.save(checklist));
     }
 
     @Override
-    public List<Checklist> getChecklistsByCard(int cardId) {
-        return checklistRepository.findByCardId(cardId);
+    public List<ChecklistDto> getChecklistsByCard(int cardId) {
+        return checklistRepository.findByCardId(cardId).stream()
+                .map(LabelMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -102,12 +118,13 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public ChecklistItem addItem(ChecklistItem item) {
+    public ChecklistItemDto addItem(ChecklistItemDto itemDto) {
+        ChecklistItem item = LabelMapper.mapToEntity(itemDto);
         if (item.getText() == null || item.getText().trim().isEmpty()) {
             throw new BadRequestException("Checklist item text cannot be empty");
         }
         item.setIsCompleted(false);
-        return checklistItemRepository.save(item);
+        return LabelMapper.mapToDto(checklistItemRepository.save(item));
     }
 
     @Override

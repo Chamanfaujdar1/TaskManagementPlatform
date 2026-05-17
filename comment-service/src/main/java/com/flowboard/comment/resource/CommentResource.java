@@ -1,40 +1,37 @@
 package com.flowboard.comment.resource;
 
-import com.flowboard.comment.entity.Attachment;
-import com.flowboard.comment.entity.Comment;
+import com.flowboard.comment.dto.AttachmentDto;
+import com.flowboard.comment.dto.CommentDto;
 import com.flowboard.comment.service.CommentService;
 import com.flowboard.comment.service.S3Service;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class CommentResource {
 
-    @Autowired
-    private CommentService commentService;
-
-    @Autowired
-    private S3Service s3Service;
+    private final CommentService commentService;
+    private final S3Service s3Service;
 
     // ADD COMMENT
     @PostMapping("/comments")
-    public ResponseEntity<Comment> addComment(
-            @RequestBody Comment comment) {
+    public ResponseEntity<CommentDto> addComment(
+            @RequestBody CommentDto commentDto) {
         return ResponseEntity.ok(
-                commentService.addComment(comment));
+                commentService.addComment(commentDto));
     }
 
     // GET COMMENTS BY CARD
     @GetMapping("/comments/card/{cardId}")
-    public ResponseEntity<List<Comment>> getByCard(
+    public ResponseEntity<List<CommentDto>> getByCard(
             @PathVariable int cardId) {
         return ResponseEntity.ok(
                 commentService.getByCard(cardId));
@@ -42,7 +39,7 @@ public class CommentResource {
 
     // GET COMMENT BY ID
     @GetMapping("/comments/{id}")
-    public ResponseEntity<Comment> getById(
+    public ResponseEntity<CommentDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 commentService.getCommentById(id));
@@ -50,7 +47,7 @@ public class CommentResource {
 
     // GET REPLIES
     @GetMapping("/comments/{id}/replies")
-    public ResponseEntity<List<Comment>> getReplies(
+    public ResponseEntity<List<CommentDto>> getReplies(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 commentService.getReplies(id));
@@ -58,7 +55,7 @@ public class CommentResource {
 
     // UPDATE COMMENT
     @PutMapping("/comments/{id}")
-    public ResponseEntity<Comment> update(
+    public ResponseEntity<CommentDto> update(
             @PathVariable int id,
             @RequestBody Map<String, String> request) {
         return ResponseEntity.ok(
@@ -85,15 +82,15 @@ public class CommentResource {
 
     // ADD ATTACHMENT
     @PostMapping("/attachments")
-    public ResponseEntity<Attachment> addAttachment(
-            @RequestBody Attachment attachment) {
+    public ResponseEntity<AttachmentDto> addAttachment(
+            @RequestBody AttachmentDto attachmentDto) {
         return ResponseEntity.ok(
-                commentService.addAttachment(attachment));
+                commentService.addAttachment(attachmentDto));
     }
 
     // GET ATTACHMENTS BY CARD
     @GetMapping("/attachments/card/{cardId}")
-    public ResponseEntity<List<Attachment>> getAttachments(
+    public ResponseEntity<List<AttachmentDto>> getAttachments(
             @PathVariable int cardId) {
         return ResponseEntity.ok(
                 commentService.getAttachmentsByCard(cardId));
@@ -110,13 +107,13 @@ public class CommentResource {
 
     // UPLOAD ATTACHMENT TO S3
     @PostMapping(value = "/attachments/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Attachment> uploadAttachment(
+    public ResponseEntity<AttachmentDto> uploadAttachment(
             @RequestParam("file") MultipartFile file,
             @RequestParam("cardId") int cardId,
             @RequestParam("uploaderId") int uploaderId) {
         try {
             String fileUrl = s3Service.uploadFile(file);
-            Attachment attachment = new Attachment();
+            AttachmentDto attachment = new AttachmentDto();
             attachment.setCardId(cardId);
             attachment.setUploaderId(uploaderId);
             attachment.setFileName(file.getOriginalFilename());

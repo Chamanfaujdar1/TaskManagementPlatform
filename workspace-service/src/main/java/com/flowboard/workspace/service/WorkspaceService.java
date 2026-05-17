@@ -1,35 +1,35 @@
 package com.flowboard.workspace.service;
 
-import com.flowboard.workspace.entity.Workspace;
-import com.flowboard.workspace.entity.WorkspaceMember;
+import com.flowboard.workspace.dto.WorkspaceDto;
+import com.flowboard.workspace.dto.WorkspaceMemberDto;
 
 import java.util.List;
 
 public interface WorkspaceService {
 
-    Workspace createWorkspace(Workspace workspace);
+    WorkspaceDto createWorkspace(WorkspaceDto workspaceDto);
 
-    Workspace getById(int workspaceId);
+    WorkspaceDto getById(int workspaceId);
 
-    List<Workspace> getByOwner(int ownerId);
+    List<WorkspaceDto> getByOwner(int ownerId);
 
-    List<Workspace> getByMember(int userId);
+    List<WorkspaceDto> getByMember(int userId);
 
-    List<Workspace> getPublicWorkspaces();
+    List<WorkspaceDto> getPublicWorkspaces();
 
-    Workspace updateWorkspace(int workspaceId, Workspace workspace);
+    WorkspaceDto updateWorkspace(int workspaceId, WorkspaceDto workspaceDto);
 
     void deleteWorkspace(int workspaceId);
 
-    WorkspaceMember addMember(int workspaceId, int userId, String role);
+    WorkspaceMemberDto addMember(int workspaceId, int userId, String role);
 
     void removeMember(int workspaceId, int userId);
 
     void updateMemberRole(int workspaceId, int userId, String role);
 
-    List<WorkspaceMember> getMembers(int workspaceId);
+    List<WorkspaceMemberDto> getMembers(int workspaceId);
 
     long getTotalCount();
 
-    List<Workspace> getAllWorkspaces();
+    List<WorkspaceDto> getAllWorkspaces();
 }

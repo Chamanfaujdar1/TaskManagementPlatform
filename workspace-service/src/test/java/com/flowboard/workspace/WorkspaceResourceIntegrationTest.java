@@ -1,7 +1,7 @@
 package com.flowboard.workspace;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.workspace.entity.Workspace;
+import com.flowboard.workspace.dto.WorkspaceDto;
 import com.flowboard.workspace.repository.WorkspaceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class WorkspaceResourceIntegrationTest {
     @Test
     void createAndGetWorkspace_Success() throws Exception {
         // 1. Create Workspace
-        Workspace workspace = new Workspace();
+        WorkspaceDto workspace = new WorkspaceDto();
         workspace.setName("Integration Workspace");
         workspace.setOwnerId(1);
         workspace.setVisibility("PUBLIC");
@@ -52,7 +52,7 @@ public class WorkspaceResourceIntegrationTest {
                 .andExpect(jsonPath("$.name").value("Integration Workspace"))
                 .andReturn().getResponse().getContentAsString();
 
-        Workspace saved = objectMapper.readValue(result, Workspace.class);
+        WorkspaceDto saved = objectMapper.readValue(result, WorkspaceDto.class);
 
         // 2. Get Workspace by ID
         mockMvc.perform(get("/api/v1/workspaces/" + saved.getWorkspaceId()))

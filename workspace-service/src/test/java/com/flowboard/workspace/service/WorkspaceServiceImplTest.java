@@ -1,5 +1,6 @@
 package com.flowboard.workspace.service;
 
+import com.flowboard.workspace.dto.WorkspaceDto;
 import com.flowboard.workspace.entity.Workspace;
 import com.flowboard.workspace.entity.WorkspaceMember;
 import com.flowboard.workspace.exception.BadRequestException;
@@ -30,6 +31,7 @@ public class WorkspaceServiceImplTest {
     private WorkspaceServiceImpl workspaceService;
 
     private Workspace testWorkspace;
+    private WorkspaceDto testWorkspaceDto;
 
     @BeforeEach
     void setUp() {
@@ -38,6 +40,12 @@ public class WorkspaceServiceImplTest {
         testWorkspace.setName("Test Workspace");
         testWorkspace.setOwnerId(100);
         testWorkspace.setVisibility("PRIVATE");
+
+        testWorkspaceDto = new WorkspaceDto();
+        testWorkspaceDto.setWorkspaceId(1);
+        testWorkspaceDto.setName("Test Workspace");
+        testWorkspaceDto.setOwnerId(100);
+        testWorkspaceDto.setVisibility("PRIVATE");
     }
 
     @Test
@@ -47,22 +55,22 @@ public class WorkspaceServiceImplTest {
         when(workspaceRepository.save(any(Workspace.class))).thenReturn(testWorkspace);
 
         // Act
-        Workspace saved = workspaceService.createWorkspace(testWorkspace);
+        WorkspaceDto saved = workspaceService.createWorkspace(testWorkspaceDto);
 
         // Assert
         assertNotNull(saved);
         assertEquals("Test Workspace", saved.getName());
-        verify(workspaceRepository, times(1)).save(testWorkspace);
+        verify(workspaceRepository, times(1)).save(any(Workspace.class));
         verify(workspaceMemberRepository, times(1)).save(any(WorkspaceMember.class));
     }
 
     @Test
     void createWorkspace_EmptyName_ThrowsException() {
         // Arrange
-        testWorkspace.setName("");
+        testWorkspaceDto.setName("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> workspaceService.createWorkspace(testWorkspace));
+        assertThrows(BadRequestException.class, () -> workspaceService.createWorkspace(testWorkspaceDto));
         verify(workspaceRepository, never()).save(any(Workspace.class));
     }
 
@@ -72,7 +80,7 @@ public class WorkspaceServiceImplTest {
         when(workspaceRepository.existsByNameAndOwnerId(anyString(), anyInt())).thenReturn(true);
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> workspaceService.createWorkspace(testWorkspace));
+        assertThrows(BadRequestException.class, () -> workspaceService.createWorkspace(testWorkspaceDto));
         verify(workspaceRepository, never()).save(any(Workspace.class));
     }
 }

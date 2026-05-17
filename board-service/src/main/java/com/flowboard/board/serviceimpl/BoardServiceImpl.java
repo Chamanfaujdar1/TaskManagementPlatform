@@ -1,29 +1,39 @@
 package com.flowboard.board.serviceimpl;
 
+import com.flowboard.board.dto.BoardDto;
+import com.flowboard.board.dto.BoardMemberDto;
 import com.flowboard.board.entity.Board;
 import com.flowboard.board.entity.BoardMember;
 import com.flowboard.board.exception.BadRequestException;
 import com.flowboard.board.exception.ResourceNotFoundException;
+import com.flowboard.board.mapper.BoardMapper;
+import com.flowboard.board.mapper.BoardMemberMapper;
 import com.flowboard.board.repository.BoardMemberRepository;
 import com.flowboard.board.repository.BoardRepository;
 import com.flowboard.board.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
-    @Autowired
-    private BoardRepository boardRepository;
+    private final BoardRepository boardRepository;
+    private final BoardMemberRepository boardMemberRepository;
 
-    @Autowired
-    private BoardMemberRepository boardMemberRepository;
+    private Board findBoardById(int boardId) {
+        return boardRepository.findByBoardId(boardId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Board not found with id: " + boardId));
+    }
 
     @Override
-    public Board createBoard(Board board) {
+    public BoardDto createBoard(BoardDto boardDto) {
+        Board board = BoardMapper.mapToEntity(boardDto);
         board.setIsClosed(false);
         Board saved = boardRepository.save(board);
 
@@ -33,34 +43,38 @@ public class BoardServiceImpl implements BoardService {
         creatorMember.setRole("ADMIN");
         boardMemberRepository.save(creatorMember);
 
-        return saved;
+        return BoardMapper.mapToDto(saved);
     }
 
     @Override
-    public Board getBoardById(int boardId) {
-        return boardRepository.findByBoardId(boardId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Board not found with id: " + boardId));
+    public BoardDto getBoardById(int boardId) {
+        return BoardMapper.mapToDto(findBoardById(boardId));
     }
 
     @Override
-    public List<Board> getBoardsByWorkspace(int workspaceId) {
-        return boardRepository.findByWorkspaceId(workspaceId);
+    public List<BoardDto> getBoardsByWorkspace(int workspaceId) {
+        return boardRepository.findByWorkspaceId(workspaceId).stream()
+                .map(BoardMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Board> getBoardsByMember(int userId) {
-        return boardRepository.findByMemberUserId(userId);
+    public List<BoardDto> getBoardsByMember(int userId) {
+        return boardRepository.findByMemberUserId(userId).stream()
+                .map(BoardMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Board> getBoardsByCreator(int createdById) {
-        return boardRepository.findByCreatedById(createdById);
+    public List<BoardDto> getBoardsByCreator(int createdById) {
+        return boardRepository.findByCreatedById(createdById).stream()
+                .map(BoardMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Board updateBoard(int boardId, Board updated) {
-        Board existing = getBoardById(boardId);
+    public BoardDto updateBoard(int boardId, BoardDto updated) {
+        Board existing = findBoardById(boardId);
         if (existing.getIsClosed()) {
             throw new BadRequestException("Cannot update a closed board with id: " + boardId);
         }
@@ -68,19 +82,19 @@ public class BoardServiceImpl implements BoardService {
         if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
         if (updated.getBackground() != null) existing.setBackground(updated.getBackground());
         if (updated.getVisibility() != null) existing.setVisibility(updated.getVisibility());
-        return boardRepository.save(existing);
+        return BoardMapper.mapToDto(boardRepository.save(existing));
     }
 
     @Override
     public void closeBoard(int boardId) {
-        Board board = getBoardById(boardId);
+        Board board = findBoardById(boardId);
         board.setIsClosed(true);
         boardRepository.save(board);
     }
 
     @Override
     public void reopenBoard(int boardId) {
-        Board board = getBoardById(boardId);
+        Board board = findBoardById(boardId);
         board.setIsClosed(false);
         boardRepository.save(board);
     }
@@ -88,12 +102,12 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void deleteBoard(int boardId) {
-        getBoardById(boardId);
+        findBoardById(boardId);
         boardRepository.deleteById(boardId);
     }
 
     @Override
-    public BoardMember addMember(int boardId, int userId, String role) {
+    public BoardMemberDto addMember(int boardId, int userId, String role) {
         if (boardMemberRepository.existsByBoardIdAndUserId(boardId, userId)) {
             throw new BadRequestException("User " + userId + " is already a member of board " + boardId);
         }
@@ -101,7 +115,7 @@ public class BoardServiceImpl implements BoardService {
         member.setBoardId(boardId);
         member.setUserId(userId);
         member.setRole(role != null ? role : "MEMBER");
-        return boardMemberRepository.save(member);
+        return BoardMemberMapper.mapToDto(boardMemberRepository.save(member));
     }
 
     @Override
@@ -124,8 +138,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<BoardMember> getMembers(int boardId) {
-        return boardMemberRepository.findByBoardId(boardId);
+    public List<BoardMemberDto> getMembers(int boardId) {
+        return boardMemberRepository.findByBoardId(boardId).stream()
+                .map(BoardMemberMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -134,7 +150,9 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<Board> getAllBoards() {
-        return boardRepository.findAll();
+    public List<BoardDto> getAllBoards() {
+        return boardRepository.findAll().stream()
+                .map(BoardMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 }

@@ -1,8 +1,8 @@
 package com.flowboard.list.resource;
 
-import com.flowboard.list.entity.TaskList;
+import com.flowboard.list.dto.TaskListDto;
 import com.flowboard.list.service.ListService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,23 +10,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/lists")
 public class ListResource {
 
-    @Autowired
-    private ListService listService;
+    private final ListService listService;
 
     // CREATE LIST
     @PostMapping
-    public ResponseEntity<TaskList> create(
-            @RequestBody TaskList taskList) {
+    public ResponseEntity<TaskListDto> create(
+            @RequestBody TaskListDto taskListDto) {
         return ResponseEntity.ok(
-                listService.createList(taskList));
+                listService.createList(taskListDto));
     }
 
     // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<TaskList> getById(
+    public ResponseEntity<TaskListDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 listService.getListById(id));
@@ -34,7 +34,7 @@ public class ListResource {
 
     // GET BY BOARD
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<List<TaskList>> getByBoard(
+    public ResponseEntity<List<TaskListDto>> getByBoard(
             @PathVariable int boardId) {
         return ResponseEntity.ok(
                 listService.getListsByBoard(boardId));
@@ -42,7 +42,7 @@ public class ListResource {
 
     // GET ARCHIVED LISTS
     @GetMapping("/board/{boardId}/archived")
-    public ResponseEntity<List<TaskList>> getArchived(
+    public ResponseEntity<List<TaskListDto>> getArchived(
             @PathVariable int boardId) {
         return ResponseEntity.ok(
                 listService.getArchivedLists(boardId));
@@ -50,11 +50,11 @@ public class ListResource {
 
     // UPDATE LIST
     @PutMapping("/{id}")
-    public ResponseEntity<TaskList> update(
+    public ResponseEntity<TaskListDto> update(
             @PathVariable int id,
-            @RequestBody TaskList taskList) {
+            @RequestBody TaskListDto taskListDto) {
         return ResponseEntity.ok(
-                listService.updateList(id, taskList));
+                listService.updateList(id, taskListDto));
     }
 
     // REORDER LISTS
@@ -89,7 +89,7 @@ public class ListResource {
 
     // MOVE LIST TO ANOTHER BOARD
     @PutMapping("/{id}/move")
-    public ResponseEntity<TaskList> move(
+    public ResponseEntity<TaskListDto> move(
             @PathVariable int id,
             @RequestBody Map<String, Integer> request) {
         int targetBoardId = request.get("targetBoardId");

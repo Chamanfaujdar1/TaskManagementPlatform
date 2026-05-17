@@ -1,8 +1,8 @@
 package com.flowboard.card.resource;
 
-import com.flowboard.card.entity.Card;
+import com.flowboard.card.dto.CardDto;
 import com.flowboard.card.service.CardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,23 +10,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/cards")
 public class CardResource {
 
-    @Autowired
-    private CardService cardService;
+    private final CardService cardService;
 
     // CREATE CARD
     @PostMapping
-    public ResponseEntity<Card> create(
-            @RequestBody Card card) {
+    public ResponseEntity<CardDto> create(
+            @RequestBody CardDto cardDto) {
         return ResponseEntity.ok(
-                cardService.createCard(card));
+                cardService.createCard(cardDto));
     }
 
     // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<Card> getById(
+    public ResponseEntity<CardDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 cardService.getCardById(id));
@@ -34,7 +34,7 @@ public class CardResource {
 
     // GET BY LIST
     @GetMapping("/list/{listId}")
-    public ResponseEntity<List<Card>> getByList(
+    public ResponseEntity<List<CardDto>> getByList(
             @PathVariable int listId) {
         return ResponseEntity.ok(
                 cardService.getCardsByList(listId));
@@ -42,7 +42,7 @@ public class CardResource {
 
     // GET BY BOARD
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<List<Card>> getByBoard(
+    public ResponseEntity<List<CardDto>> getByBoard(
             @PathVariable int boardId) {
         return ResponseEntity.ok(
                 cardService.getCardsByBoard(boardId));
@@ -50,7 +50,7 @@ public class CardResource {
 
     // GET BY ASSIGNEE
     @GetMapping("/assignee/{userId}")
-    public ResponseEntity<List<Card>> getByAssignee(
+    public ResponseEntity<List<CardDto>> getByAssignee(
             @PathVariable int userId) {
         return ResponseEntity.ok(
                 cardService.getCardsByAssignee(userId));
@@ -58,14 +58,14 @@ public class CardResource {
 
     // GET OVERDUE CARDS
     @GetMapping("/overdue")
-    public ResponseEntity<List<Card>> getOverdue() {
+    public ResponseEntity<List<CardDto>> getOverdue() {
         return ResponseEntity.ok(
                 cardService.getOverdueCards());
     }
 
     // SEARCH CARDS
     @GetMapping("/search")
-    public ResponseEntity<List<Card>> search(
+    public ResponseEntity<List<CardDto>> search(
             @RequestParam String q) {
         return ResponseEntity.ok(
                 cardService.searchCards(q));
@@ -73,16 +73,16 @@ public class CardResource {
 
     // UPDATE CARD
     @PutMapping("/{id}")
-    public ResponseEntity<Card> update(
+    public ResponseEntity<CardDto> update(
             @PathVariable int id,
-            @RequestBody Card card) {
+            @RequestBody CardDto cardDto) {
         return ResponseEntity.ok(
-                cardService.updateCard(id, card));
+                cardService.updateCard(id, cardDto));
     }
 
     // MOVE CARD
     @PutMapping("/{id}/move")
-    public ResponseEntity<Card> move(
+    public ResponseEntity<CardDto> move(
             @PathVariable int id,
             @RequestBody Map<String, Integer> request) {
         int targetListId = request.get("targetListId");
@@ -106,7 +106,7 @@ public class CardResource {
 
     // SET ASSIGNEE
     @PutMapping("/{id}/assignee")
-    public ResponseEntity<Card> setAssignee(
+    public ResponseEntity<CardDto> setAssignee(
             @PathVariable int id,
             @RequestBody Map<String, Integer> request) {
         return ResponseEntity.ok(
@@ -116,7 +116,7 @@ public class CardResource {
 
     // SET PRIORITY
     @PutMapping("/{id}/priority")
-    public ResponseEntity<Card> setPriority(
+    public ResponseEntity<CardDto> setPriority(
             @PathVariable int id,
             @RequestBody Map<String, String> request) {
         return ResponseEntity.ok(
@@ -126,7 +126,7 @@ public class CardResource {
 
     // SET STATUS
     @PutMapping("/{id}/status")
-    public ResponseEntity<Card> setStatus(
+    public ResponseEntity<CardDto> setStatus(
             @PathVariable int id,
             @RequestBody Map<String, String> request) {
         return ResponseEntity.ok(
@@ -163,7 +163,7 @@ public class CardResource {
 
     // GET ALL CARDS
     @GetMapping("/all")
-    public ResponseEntity<List<Card>> getAll() {
+    public ResponseEntity<List<CardDto>> getAll() {
         return ResponseEntity.ok(cardService.getAllCards());
     }
 }

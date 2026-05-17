@@ -1,5 +1,6 @@
 package com.flowboard.board.service;
 
+import com.flowboard.board.dto.BoardDto;
 import com.flowboard.board.entity.Board;
 import com.flowboard.board.entity.BoardMember;
 import com.flowboard.board.repository.BoardMemberRepository;
@@ -29,6 +30,7 @@ public class BoardServiceImplTest {
     private BoardServiceImpl boardService;
 
     private Board testBoard;
+    private BoardDto testBoardDto;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +39,14 @@ public class BoardServiceImplTest {
         testBoard.setName("Test Board");
         testBoard.setWorkspaceId(10);
         testBoard.setCreatedById(100);
+        testBoard.setIsClosed(false);
+
+        testBoardDto = new BoardDto();
+        testBoardDto.setBoardId(1);
+        testBoardDto.setName("Test Board");
+        testBoardDto.setWorkspaceId(10);
+        testBoardDto.setCreatedById(100);
+        testBoardDto.setIsClosed(false);
     }
 
     @Test
@@ -45,12 +55,12 @@ public class BoardServiceImplTest {
         when(boardRepository.save(any(Board.class))).thenReturn(testBoard);
 
         // Act
-        Board saved = boardService.createBoard(testBoard);
+        BoardDto saved = boardService.createBoard(testBoardDto);
 
         // Assert
         assertNotNull(saved);
         assertFalse(saved.getIsClosed());
-        verify(boardRepository, times(1)).save(testBoard);
+        verify(boardRepository, times(1)).save(any(Board.class));
         verify(boardMemberRepository, times(1)).save(any(BoardMember.class));
     }
 }

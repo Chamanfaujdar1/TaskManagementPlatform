@@ -1,9 +1,9 @@
 package com.flowboard.workspace.resource;
 
-import com.flowboard.workspace.entity.Workspace;
-import com.flowboard.workspace.entity.WorkspaceMember;
+import com.flowboard.workspace.dto.WorkspaceDto;
+import com.flowboard.workspace.dto.WorkspaceMemberDto;
 import com.flowboard.workspace.service.WorkspaceService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,23 +11,23 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/workspaces")
 public class WorkspaceResource {
 
-    @Autowired
-    private WorkspaceService workspaceService;
+    private final WorkspaceService workspaceService;
 
     // CREATE WORKSPACE
     @PostMapping
-    public ResponseEntity<Workspace> create(
-            @RequestBody Workspace workspace) {
+    public ResponseEntity<WorkspaceDto> create(
+            @RequestBody WorkspaceDto workspaceDto) {
         return ResponseEntity.ok(
-                workspaceService.createWorkspace(workspace));
+                workspaceService.createWorkspace(workspaceDto));
     }
 
     // GET BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<Workspace> getById(
+    public ResponseEntity<WorkspaceDto> getById(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 workspaceService.getById(id));
@@ -35,7 +35,7 @@ public class WorkspaceResource {
 
     // GET BY OWNER
     @GetMapping("/owner/{ownerId}")
-    public ResponseEntity<List<Workspace>> getByOwner(
+    public ResponseEntity<List<WorkspaceDto>> getByOwner(
             @PathVariable int ownerId) {
         return ResponseEntity.ok(
                 workspaceService.getByOwner(ownerId));
@@ -43,7 +43,7 @@ public class WorkspaceResource {
 
     // GET BY MEMBER
     @GetMapping("/member/{userId}")
-    public ResponseEntity<List<Workspace>> getByMember(
+    public ResponseEntity<List<WorkspaceDto>> getByMember(
             @PathVariable int userId) {
         return ResponseEntity.ok(
                 workspaceService.getByMember(userId));
@@ -51,18 +51,18 @@ public class WorkspaceResource {
 
     // GET PUBLIC WORKSPACES
     @GetMapping("/public")
-    public ResponseEntity<List<Workspace>> getPublic() {
+    public ResponseEntity<List<WorkspaceDto>> getPublic() {
         return ResponseEntity.ok(
                 workspaceService.getPublicWorkspaces());
     }
 
     // UPDATE WORKSPACE
     @PutMapping("/{id}")
-    public ResponseEntity<Workspace> update(
+    public ResponseEntity<WorkspaceDto> update(
             @PathVariable int id,
-            @RequestBody Workspace workspace) {
+            @RequestBody WorkspaceDto workspaceDto) {
         return ResponseEntity.ok(
-                workspaceService.updateWorkspace(id, workspace));
+                workspaceService.updateWorkspace(id, workspaceDto));
     }
 
     // DELETE WORKSPACE
@@ -76,7 +76,7 @@ public class WorkspaceResource {
 
     // ADD MEMBER
     @PostMapping("/{id}/members")
-    public ResponseEntity<WorkspaceMember> addMember(
+    public ResponseEntity<WorkspaceMemberDto> addMember(
             @PathVariable int id,
             @RequestBody Map<String, Object> request) {
         int userId = (Integer) request.get("userId");
@@ -109,7 +109,7 @@ public class WorkspaceResource {
 
     // GET ALL MEMBERS
     @GetMapping("/{id}/members")
-    public ResponseEntity<List<WorkspaceMember>> getMembers(
+    public ResponseEntity<List<WorkspaceMemberDto>> getMembers(
             @PathVariable int id) {
         return ResponseEntity.ok(
                 workspaceService.getMembers(id));
@@ -123,7 +123,7 @@ public class WorkspaceResource {
 
     // GET ALL WORKSPACES
     @GetMapping("/all")
-    public ResponseEntity<List<Workspace>> getAll() {
+    public ResponseEntity<List<WorkspaceDto>> getAll() {
         return ResponseEntity.ok(workspaceService.getAllWorkspaces());
     }
 }

@@ -37,7 +37,7 @@
         
         <!-- SonarQube Configuration -->
         <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.projectKey>flowboard-backend</sonar.projectKey>
+        <sonar.projectKey>task-management-platform</sonar.projectKey>
         <sonar.projectName>FlowBoard Backend</sonar.projectName>
         <sonar.java.binaries>target/classes</sonar.java.binaries>
     </properties>
@@ -227,13 +227,14 @@
                         </execution>
                     </executions>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>5.0.0.4389</version>
+                    <version>3.11.0.3922</version>
                 </plugin>
-                
+
+
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>

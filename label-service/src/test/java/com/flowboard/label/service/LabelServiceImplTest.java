@@ -1,5 +1,6 @@
 package com.flowboard.label.service;
 
+import com.flowboard.label.dto.LabelDto;
 import com.flowboard.label.entity.Label;
 import com.flowboard.label.exception.BadRequestException;
 import com.flowboard.label.repository.CardLabelRepository;
@@ -30,6 +31,7 @@ public class LabelServiceImplTest {
     private LabelServiceImpl labelService;
 
     private Label testLabel;
+    private LabelDto testLabelDto;
 
     @BeforeEach
     void setUp() {
@@ -38,6 +40,12 @@ public class LabelServiceImplTest {
         testLabel.setName("Bug");
         testLabel.setColor("#FF0000");
         testLabel.setBoardId(10);
+
+        testLabelDto = new LabelDto();
+        testLabelDto.setLabelId(1);
+        testLabelDto.setName("Bug");
+        testLabelDto.setColor("#FF0000");
+        testLabelDto.setBoardId(10);
     }
 
     @Test
@@ -46,20 +54,20 @@ public class LabelServiceImplTest {
         when(labelRepository.save(any(Label.class))).thenReturn(testLabel);
 
         // Act
-        Label saved = labelService.createLabel(testLabel);
+        LabelDto saved = labelService.createLabel(testLabelDto);
 
         // Assert
         assertNotNull(saved);
         assertEquals("Bug", saved.getName());
-        verify(labelRepository, times(1)).save(testLabel);
+        verify(labelRepository, times(1)).save(any(Label.class));
     }
 
     @Test
     void createLabel_EmptyName_ThrowsException() {
         // Arrange
-        testLabel.setName("");
+        testLabelDto.setName("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> labelService.createLabel(testLabel));
+        assertThrows(BadRequestException.class, () -> labelService.createLabel(testLabelDto));
     }
 }

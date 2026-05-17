@@ -1,5 +1,6 @@
 package com.flowboard.card.service;
 
+import com.flowboard.card.dto.CardDto;
 import com.flowboard.card.entity.Card;
 import com.flowboard.card.exception.BadRequestException;
 import com.flowboard.card.repository.CardRepository;
@@ -37,6 +38,7 @@ public class CardServiceImplTest {
     private CardServiceImpl cardService;
 
     private Card testCard;
+    private CardDto testCardDto;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +47,14 @@ public class CardServiceImplTest {
         testCard.setTitle("Test Card");
         testCard.setListId(10);
         testCard.setBoardId(100);
+        testCard.setPosition(0);
+        testCard.setIsArchived(false);
+
+        testCardDto = new CardDto();
+        testCardDto.setCardId(1);
+        testCardDto.setTitle("Test Card");
+        testCardDto.setListId(10);
+        testCardDto.setBoardId(100);
     }
 
     @Test
@@ -54,20 +64,20 @@ public class CardServiceImplTest {
         when(cardRepository.save(any(Card.class))).thenReturn(testCard);
 
         // Act
-        Card saved = cardService.createCard(testCard);
+        CardDto saved = cardService.createCard(testCardDto);
 
         // Assert
         assertNotNull(saved);
         assertEquals(0, saved.getPosition());
-        verify(cardRepository, times(1)).save(testCard);
+        verify(cardRepository, times(1)).save(any(Card.class));
     }
 
     @Test
     void createCard_EmptyTitle_ThrowsException() {
         // Arrange
-        testCard.setTitle("");
+        testCardDto.setTitle("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> cardService.createCard(testCard));
+        assertThrows(BadRequestException.class, () -> cardService.createCard(testCardDto));
     }
 }

@@ -1,11 +1,11 @@
 package com.flowboard.notification.service;
 
-import com.flowboard.notification.entity.Notification;
+import com.flowboard.notification.dto.NotificationDto;
 import java.util.List;
 
 public interface NotificationService {
 
-    void send(Notification notification);
+    void send(NotificationDto notificationDto);
 
     void sendBulk(List<Integer> recipientIds,
                   String title,
@@ -17,13 +17,13 @@ public interface NotificationService {
 
     void deleteRead(int recipientId);
 
-    List<Notification> getByRecipient(int recipientId);
+    List<NotificationDto> getByRecipient(int recipientId);
 
     long getUnreadCount(int recipientId);
 
     void deleteNotification(int notificationId);
 
-    List<Notification> getAll();
+    List<NotificationDto> getAll();
 
     void sendEmail(int recipientId, String subject, String text);
 }

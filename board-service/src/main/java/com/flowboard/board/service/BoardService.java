@@ -1,38 +1,38 @@
 package com.flowboard.board.service;
 
-import com.flowboard.board.entity.Board;
-import com.flowboard.board.entity.BoardMember;
+import com.flowboard.board.dto.BoardDto;
+import com.flowboard.board.dto.BoardMemberDto;
 
 import java.util.List;
 
 public interface BoardService {
 
-    Board createBoard(Board board);
+    BoardDto createBoard(BoardDto boardDto);
 
-    Board getBoardById(int boardId);
+    BoardDto getBoardById(int boardId);
 
-    List<Board> getBoardsByWorkspace(int workspaceId);
+    List<BoardDto> getBoardsByWorkspace(int workspaceId);
 
-    List<Board> getBoardsByMember(int userId);
+    List<BoardDto> getBoardsByMember(int userId);
 
-    List<Board> getBoardsByCreator(int createdById);
+    List<BoardDto> getBoardsByCreator(int createdById);
 
-    Board updateBoard(int boardId, Board board);
+    BoardDto updateBoard(int boardId, BoardDto boardDto);
 
     void closeBoard(int boardId);
     void reopenBoard(int boardId);
 
     void deleteBoard(int boardId);
 
-    BoardMember addMember(int boardId, int userId, String role);
+    BoardMemberDto addMember(int boardId, int userId, String role);
 
     void removeMember(int boardId, int userId);
 
     void updateMemberRole(int boardId, int userId, String role);
 
-    List<BoardMember> getMembers(int boardId);
+    List<BoardMemberDto> getMembers(int boardId);
 
     long getTotalCount();
 
-    List<Board> getAllBoards();
+    List<BoardDto> getAllBoards();
 }

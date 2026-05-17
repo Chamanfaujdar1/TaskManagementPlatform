@@ -1,5 +1,6 @@
 package com.flowboard.comment.service;
 
+import com.flowboard.comment.dto.CommentDto;
 import com.flowboard.comment.entity.Comment;
 import com.flowboard.comment.exception.BadRequestException;
 import com.flowboard.comment.repository.AttachmentRepository;
@@ -29,6 +30,7 @@ public class CommentServiceImplTest {
     private CommentServiceImpl commentService;
 
     private Comment testComment;
+    private CommentDto testCommentDto;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +39,13 @@ public class CommentServiceImplTest {
         testComment.setContent("Test Comment");
         testComment.setCardId(10);
         testComment.setAuthorId(100);
+        testComment.setIsDeleted(false);
+
+        testCommentDto = new CommentDto();
+        testCommentDto.setCommentId(1);
+        testCommentDto.setContent("Test Comment");
+        testCommentDto.setCardId(10);
+        testCommentDto.setAuthorId(100);
     }
 
     @Test
@@ -45,20 +54,20 @@ public class CommentServiceImplTest {
         when(commentRepository.save(any(Comment.class))).thenReturn(testComment);
 
         // Act
-        Comment saved = commentService.addComment(testComment);
+        CommentDto saved = commentService.addComment(testCommentDto);
 
         // Assert
         assertNotNull(saved);
         assertFalse(saved.getIsDeleted());
-        verify(commentRepository, times(1)).save(testComment);
+        verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
     @Test
     void addComment_EmptyContent_ThrowsException() {
         // Arrange
-        testComment.setContent("");
+        testCommentDto.setContent("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> commentService.addComment(testComment));
+        assertThrows(BadRequestException.class, () -> commentService.addComment(testCommentDto));
     }
 }

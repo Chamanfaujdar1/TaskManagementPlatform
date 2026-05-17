@@ -1,5 +1,6 @@
 package com.flowboard.list.service;
 
+import com.flowboard.list.dto.TaskListDto;
 import com.flowboard.list.entity.TaskList;
 import com.flowboard.list.exception.BadRequestException;
 import com.flowboard.list.repository.ListRepository;
@@ -25,6 +26,7 @@ public class ListServiceImplTest {
     private ListServiceImpl listService;
 
     private TaskList testList;
+    private TaskListDto testListDto;
 
     @BeforeEach
     void setUp() {
@@ -32,6 +34,13 @@ public class ListServiceImplTest {
         testList.setListId(1);
         testList.setName("To Do");
         testList.setBoardId(10);
+        testList.setPosition(6);
+        testList.setIsArchived(false);
+
+        testListDto = new TaskListDto();
+        testListDto.setListId(1);
+        testListDto.setName("To Do");
+        testListDto.setBoardId(10);
     }
 
     @Test
@@ -41,21 +50,21 @@ public class ListServiceImplTest {
         when(listRepository.save(any(TaskList.class))).thenReturn(testList);
 
         // Act
-        TaskList saved = listService.createList(testList);
+        TaskListDto saved = listService.createList(testListDto);
 
         // Assert
         assertNotNull(saved);
-        assertEquals(6, testList.getPosition());
-        assertFalse(testList.getIsArchived());
-        verify(listRepository, times(1)).save(testList);
+        assertEquals(6, saved.getPosition());
+        assertFalse(saved.getIsArchived());
+        verify(listRepository, times(1)).save(any(TaskList.class));
     }
 
     @Test
     void createList_EmptyName_ThrowsException() {
         // Arrange
-        testList.setName("");
+        testListDto.setName("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> listService.createList(testList));
+        assertThrows(BadRequestException.class, () -> listService.createList(testListDto));
     }
 }

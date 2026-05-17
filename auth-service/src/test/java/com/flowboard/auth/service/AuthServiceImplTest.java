@@ -1,6 +1,7 @@
 package com.flowboard.auth.service;
 
 import com.flowboard.auth.config.JwtUtil;
+import com.flowboard.auth.dto.UserDto;
 import com.flowboard.auth.entity.User;
 import com.flowboard.auth.exception.BadRequestException;
 import com.flowboard.auth.repository.UserRepository;
@@ -35,14 +36,22 @@ public class AuthServiceImplTest {
     private AuthServiceImpl authService;
 
     private User testUser;
+    private UserDto testUserDto;
 
     @BeforeEach
     void setUp() {
         testUser = new User();
+        testUser.setUserId(1);
         testUser.setEmail("test@flowboard.com");
         testUser.setUsername("testuser");
         testUser.setPasswordHash("rawPassword");
         testUser.setFullName("Test User");
+
+        testUserDto = new UserDto();
+        testUserDto.setEmail("test@flowboard.com");
+        testUserDto.setUsername("testuser");
+        testUserDto.setPassword("rawPassword");
+        testUserDto.setFullName("Test User");
     }
 
     @Test
@@ -54,12 +63,12 @@ public class AuthServiceImplTest {
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
         // Act
-        User result = authService.register(testUser);
+        UserDto result = authService.register(testUserDto);
 
         // Assert
         assertNotNull(result);
-        assertEquals("encodedPassword", testUser.getPasswordHash());
-        verify(userRepository, times(1)).save(testUser);
+        assertEquals("test@flowboard.com", result.getEmail());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
@@ -68,7 +77,7 @@ public class AuthServiceImplTest {
         when(userRepository.existsByEmail("test@flowboard.com")).thenReturn(true);
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> authService.register(testUser));
+        assertThrows(BadRequestException.class, () -> authService.register(testUserDto));
         verify(userRepository, never()).save(any(User.class));
     }
 

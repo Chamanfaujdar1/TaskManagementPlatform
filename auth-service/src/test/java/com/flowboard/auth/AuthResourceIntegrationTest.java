@@ -47,15 +47,15 @@ public class AuthResourceIntegrationTest {
     @Test
     void registerAndLogin_Success() throws Exception {
         // 1. Register a new user
-        User user = new User();
-        user.setFullName("Integration Test");
-        user.setUsername("inttest");
-        user.setEmail("int@test.com");
-        user.setPasswordHash("password123");
+        Map<String, String> userReq = new HashMap<>();
+        userReq.put("fullName", "Integration Test");
+        userReq.put("username", "inttest");
+        userReq.put("email", "int@test.com");
+        userReq.put("password", "password123");
 
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(objectMapper.writeValueAsString(userReq)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("int@test.com"));
 
@@ -81,6 +81,7 @@ public class AuthResourceIntegrationTest {
         user.setPasswordHash(passwordEncoder.encode("correctPass"));
         user.setRole("MEMBER");
         user.setIsActive(true);
+        user.setProvider("LOCAL");
         userRepository.save(user);
 
         // 2. Login with wrong password

@@ -1,7 +1,7 @@
 package com.flowboard.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flowboard.notification.entity.Notification;
+import com.flowboard.notification.dto.NotificationDto;
 import com.flowboard.notification.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ public class NotificationResourceIntegrationTest {
     @Test
     void sendAndGetNotifications_Success() throws Exception {
         // 1. Send Notification
-        Notification notification = new Notification();
+        NotificationDto notification = new NotificationDto();
         notification.setTitle("Integration Notification");
         notification.setMessage("Test Message");
         notification.setRecipientId(1);

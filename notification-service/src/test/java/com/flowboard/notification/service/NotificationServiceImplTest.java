@@ -1,5 +1,6 @@
 package com.flowboard.notification.service;
 
+import com.flowboard.notification.dto.NotificationDto;
 import com.flowboard.notification.entity.Notification;
 import com.flowboard.notification.exception.BadRequestException;
 import com.flowboard.notification.repository.NotificationRepository;
@@ -33,6 +34,7 @@ public class NotificationServiceImplTest {
     private NotificationServiceImpl notificationService;
 
     private Notification testNotification;
+    private NotificationDto testNotificationDto;
 
     @BeforeEach
     void setUp() {
@@ -42,6 +44,13 @@ public class NotificationServiceImplTest {
         testNotification.setMessage("Test Message");
         testNotification.setRecipientId(100);
         testNotification.setIsRead(false);
+
+        testNotificationDto = new NotificationDto();
+        testNotificationDto.setNotificationId(1);
+        testNotificationDto.setTitle("Test Title");
+        testNotificationDto.setMessage("Test Message");
+        testNotificationDto.setRecipientId(100);
+        testNotificationDto.setIsRead(false);
     }
 
     @Test
@@ -50,18 +59,18 @@ public class NotificationServiceImplTest {
         when(notificationRepository.save(any(Notification.class))).thenReturn(testNotification);
 
         // Act
-        notificationService.send(testNotification);
+        notificationService.send(testNotificationDto);
 
         // Assert
-        verify(notificationRepository, times(1)).save(testNotification);
+        verify(notificationRepository, times(1)).save(any(Notification.class));
     }
 
     @Test
     void send_EmptyTitle_ThrowsException() {
         // Arrange
-        testNotification.setTitle("");
+        testNotificationDto.setTitle("");
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> notificationService.send(testNotification));
+        assertThrows(BadRequestException.class, () -> notificationService.send(testNotificationDto));
     }
 }
